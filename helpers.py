@@ -1,8 +1,7 @@
 import pandas
-from pandas.io.pytables import Term
 
 # Returns log file data as a Dataframe
-# 
+#
 def ReadLog(filepath):
     cols = [
         "Timestamp",
@@ -14,7 +13,7 @@ def ReadLog(filepath):
         "URL",
         "UserID",
         "Hierarchy & Hostname",
-        "Content type"
+        "Content type",
     ]
 
     df = pandas.read_csv(filepath, names=cols, delim_whitespace=True, header=None)

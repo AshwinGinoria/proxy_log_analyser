@@ -3,7 +3,6 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 
-
 class MainWindow(QMainWindow):
     # Initializes Window Geometry and Important Variables
     def __init__(self, parent=None):
@@ -39,15 +38,19 @@ class MainWindow(QMainWindow):
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websited")
-        #self.plotTimeVsWebCount.clicked.connect(self.func)
+        # self.plotTimeVsWebCount.clicked.connect(self.func)
 
-        self.plotTimeVsBlockedWebCountButton = QPushButton("Show Time vs &Blocked Websites count")
-        #self.plotTimeVsBlockedWebCountButton.clicked.connect(self.func)
+        self.plotTimeVsBlockedWebCountButton = QPushButton(
+            "Show Time vs &Blocked Websites count"
+        )
+        # self.plotTimeVsBlockedWebCountButton.clicked.connect(self.func)
 
         # Feature buttons arranged in a grid
         self.featureButtonsLayout = QGridLayout()
-        self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton,0,0,1,1)
-        self.featureButtonsLayout.addWidget(self.plotTimeVsBlockedWebCountButton,0,1,1,1)
+        self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
+        self.featureButtonsLayout.addWidget(
+            self.plotTimeVsBlockedWebCountButton, 0, 1, 1, 1
+        )
 
         # Main Vertical Layout
         self.centralLayout.addLayout(self.buttonLayout)
@@ -74,5 +77,3 @@ class MainWindow(QMainWindow):
         with open(self.FilePath[0], "r") as File:
             text = File.read()
             self.fileTextViewBox.setText(text)
-
-    
