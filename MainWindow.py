@@ -12,6 +12,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Proxy Log Analyser")
         self.FilePath = ""
         self.resize(600, 400)
+        self.styleSheet = ""
+        with open("design.qss") as qss:
+            self.styleSheet = qss.read()
+        self.setStyleSheet(self.styleSheet)
         self.setupUi()
 
     def setupUi(self):
