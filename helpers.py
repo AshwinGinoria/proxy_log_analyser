@@ -30,7 +30,7 @@ def ReadLog(filepath):
 
 # returns the number of occurrence of each unique element in a dataframe column
 def FindCount(dataFrame, columnName):
-    columnList = df[columnName].values
+    columnList = dataFrame[columnName].values
     counterObj = Counter(columnList)
     elementDictionary = {}
     for key, value in counterObj.items():
