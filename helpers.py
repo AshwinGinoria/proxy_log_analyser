@@ -28,7 +28,7 @@ def ReadLog(filepath):
     return df
 
 
-# returns the number of occurrence of each unique object in a dataframe column
+# returns the number of occurrence of each unique element in a dataframe column
 def FindCount(dataFrame, columnName):
     columnList = df[columnName].values
     counterObj = Counter(columnList)
@@ -45,3 +45,17 @@ def PlotHistogram(dictionaryObject, xLabel, yLabel):
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
     plt.show()
+
+
+# function to find the most and least frequently visited ip
+def FindMostLeastFrequent(elementDictionary):
+    ipMax = max(elementDictionary, key=elementDictionary.get)
+    ipMin = min(elementDictionary, key=elementDictionary.get)
+
+    return (ipMax, ipMin)
+
+
+# returns the number of occurrence of a particular element from a column
+def CountRequest(dataFrame, columnName, requestType):
+    tagDictionary = FindCount(dataFrame, columnName)
+    return tagDictionary[requestType]
