@@ -1,6 +1,6 @@
 import pandas
 from collections import Counter
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 
 # Returns log file data as a Dataframe
 #
@@ -27,20 +27,21 @@ def ReadLog(filepath):
 
     return df
 
-#returns the number of occurrence of each unique object in a dataframe column
-def FindCount(dataFrame,columnName):
-    columnList=df[columnName].values
-    counterObj=Counter(columnList)
-    elementDictionary={}
-    for key,value in counterObj.items():
-        elementDictionary[key]=value
+
+# returns the number of occurrence of each unique object in a dataframe column
+def FindCount(dataFrame, columnName):
+    columnList = df[columnName].values
+    counterObj = Counter(columnList)
+    elementDictionary = {}
+    for key, value in counterObj.items():
+        elementDictionary[key] = value
 
     return elementDictionary
 
-#plots the histogram given a dictionary of key-value pairs
-def PlotHistogram(dictionaryObject,xLabel,yLabel):
-    plt.bar(dictionaryObject.keys(),dictionaryObject.values())
+
+# plots the histogram given a dictionary of key-value pairs
+def PlotHistogram(dictionaryObject, xLabel, yLabel):
+    plt.bar(dictionaryObject.keys(), dictionaryObject.values())
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
     plt.show()
-
