@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 
 # Returns log file data as a Dataframe
-#
 def ReadLog(filepath):
     cols = [
         "Timestamp",
@@ -14,7 +13,7 @@ def ReadLog(filepath):
         "Log Tag & HTTP Code",
         "Size",
         "Method",
-        "URL",
+        "URI",
         "UserID",
         "Hierarchy & Hostname",
         "Content type",
@@ -25,8 +24,19 @@ def ReadLog(filepath):
     df[["Log Tag", "HTTP Code"]] = df[cols[3]].str.split("/", expand=True)
     df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True)
 
-    df = df.drop([cols[3], cols[8]], axis=1)
-    print("DataFrame Loaded!")
+    # Extracting Domain from URI
+    m = df['URI'].str.extract('(?<=http://)(.*?)(?=/)|(?<=https://)(.*?)(?=/)')
+    m = m[0].fillna(m[1])
+    df['Domain Name'] = m
+    df['Domain Name'].fillna(df['URI'].str.extract('()(.*?)(?=:)')[1], inplace=True)
+    
+    # Dropping Useless Data to reduce RAM usage
+    df = df.drop([cols[3], cols[7], cols[8]], axis=1)
+
+    # Dropping un-important websites
+    df = df.drop(df[df['Domain Name'] == 'gateway.iitmandi.ac.in'].index)
+    df = df.drop(df[df['Domain Name'] == 'ak.staticimgfarm.com'].index)
+
     return df
 
 
