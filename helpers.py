@@ -25,9 +25,6 @@ def ReadLog(filepath):
     df[["Log Tag", "HTTP Code"]] = df[cols[3]].str.split("/", expand=True)
     df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True)
 
-<<<<<<< HEAD
-    df = df.drop([cols[3], cols[8]], axis=1)
-=======
     # Extracting Domain from URI
     m = df["URI"].str.extract("(?<=http://)(.*?)(?=/)|(?<=https://)(.*?)(?=/)")
     m = m[0].fillna(m[1])
@@ -41,7 +38,6 @@ def ReadLog(filepath):
     df = df.drop(df[df["Domain Name"] == "gateway.iitmandi.ac.in"].index)
     df = df.drop(df[df["Domain Name"] == "ak.staticimgfarm.com"].index)
 
->>>>>>> refs/remotes/origin/main
     return df
 
 
@@ -78,7 +74,6 @@ def CountRequest(dataFrame, columnName, requestType):
     tagDictionary = FindCount(dataFrame, columnName)
     return tagDictionary[requestType]
 
-<<<<<<< HEAD
 def PlotAcceptedDeniedCount(dataFrame):
     countAccepted = [0]*24
     countDenied = [0]*24
@@ -100,8 +95,6 @@ def PlotAcceptedDeniedCount(dataFrame):
  
     plt.legend()
     plt.show()
-
-=======
 
 def MinMaxTrafficTime(dataFrame):
     count_entry = [0] * 24
@@ -126,5 +119,17 @@ def MinMaxTrafficTime(dataFrame):
     plt.xlabel("Hours")
     plt.ylabel("Traffic")
     plt.show()
+
     return [max_traffic_hour, min_traffic_hour, max_traffic, min_traffic]
->>>>>>> refs/remotes/origin/main
+
+def GetTopTenClients(dataFrame):
+    clientsRequestCounts = dataFrame['Client'].value_counts()
+
+    data = {'Clients': 'Number of Requests'}
+    for i in range(10):
+        client = clientsRequestCounts.keys()[i]
+        
+        data[client] = clientsRequestCounts[client]
+
+    return data
+
