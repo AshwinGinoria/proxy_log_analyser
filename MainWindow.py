@@ -1,7 +1,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from helpers import ReadLog, PlotHistogram, MinMaxTrafficTime 
+from helpers import ReadLog, PlotHistogram, PlotAcceptedDeniedCount 
 from datetime import datetime
 
 
@@ -41,8 +41,8 @@ class MainWindow(QMainWindow):
         self.fileStatusLabel = QLabel(self, text="Status: No log selected")
 
         # Extra Feature Buttons
-        self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websited")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : MinMaxTrafficTime(self.logData))
+        self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websites")
+        self.plotTimeVsWebCountButton.clicked.connect(lambda : PlotAcceptedDeniedCount(self.logData))
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
         self.plotWebsiteFrequencyButton.clicked.connect(lambda: PlotHistogram(self.logData,"URL","Frequeny"))
