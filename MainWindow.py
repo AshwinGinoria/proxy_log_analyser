@@ -14,18 +14,6 @@ class MainWindow(QMainWindow):
         self.FilePath = ""
         self.resize(600, 400)
         self.styleSheet = ""
-        self.dataFrame = pd.DataFrame(data = [[1,1,1,1,1,1,1,1,1,1]],columns= [
-        "Timestamp",
-        "Elapsed Time",
-        "Client",
-        "Log Tag & HTTP Code",
-        "Size",
-        "Method",
-        "URL",
-        "UserID",
-        "Hierarchy & Hostname",
-        "Content type",
-    ])
         with open("design.qss") as qss:
             self.styleSheet = qss.read()
         self.setStyleSheet(self.styleSheet)
@@ -64,7 +52,7 @@ class MainWindow(QMainWindow):
         # self.plotTimeVsBlockedWebCountButton.clicked.connect(self.func)
         
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
-        self.plotWebsiteFrequencyButton.clicked.connect(self.WebFreq)
+        self.plotWebsiteFrequencyButton.clicked.connect(lambda: PlotHistogram(self.dataFrame,"URL","Frequeny"))
         
         # Feature buttons arranged in a grid
         self.featureButtonsLayout = QGridLayout()
@@ -103,5 +91,3 @@ class MainWindow(QMainWindow):
             print(first3)
             self.fileTextViewBox.setText(first3)
             self.dataFrame = ReadLog(self.FilePath[0])
-    def WebFreq(self):
-        PlotHistogram(self.dataFrame,"URL","Frequeny")
