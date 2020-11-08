@@ -25,17 +25,17 @@ def ReadLog(filepath):
     df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True)
 
     # Extracting Domain from URI
-    m = df['URI'].str.extract('(?<=http://)(.*?)(?=/)|(?<=https://)(.*?)(?=/)')
+    m = df["URI"].str.extract("(?<=http://)(.*?)(?=/)|(?<=https://)(.*?)(?=/)")
     m = m[0].fillna(m[1])
-    df['Domain Name'] = m
-    df['Domain Name'].fillna(df['URI'].str.extract('()(.*?)(?=:)')[1], inplace=True)
-    
+    df["Domain Name"] = m
+    df["Domain Name"].fillna(df["URI"].str.extract("()(.*?)(?=:)")[1], inplace=True)
+
     # Dropping Useless Data to reduce RAM usage
     df = df.drop([cols[3], cols[7], cols[8]], axis=1)
 
     # Dropping un-important websites
-    df = df.drop(df[df['Domain Name'] == 'gateway.iitmandi.ac.in'].index)
-    df = df.drop(df[df['Domain Name'] == 'ak.staticimgfarm.com'].index)
+    df = df.drop(df[df["Domain Name"] == "gateway.iitmandi.ac.in"].index)
+    df = df.drop(df[df["Domain Name"] == "ak.staticimgfarm.com"].index)
 
     return df
 
@@ -53,7 +53,7 @@ def FindCount(dataFrame, columnName):
 
 # plots the histogram given a dictionary of key-value pairs
 def PlotHistogram(dataFrame, xLabel, yLabel):
-    dictionaryObject = FindCount(dataFrame,xLabel)
+    dictionaryObject = FindCount(dataFrame, xLabel)
     plt.bar(dictionaryObject.keys(), dictionaryObject.values())
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)
@@ -73,12 +73,13 @@ def CountRequest(dataFrame, columnName, requestType):
     tagDictionary = FindCount(dataFrame, columnName)
     return tagDictionary[requestType]
 
+
 def MinMaxTrafficTime(dataFrame):
-    count_entry = [0]*24
+    count_entry = [0] * 24
     time = list(dataFrame["Timestamp"])
     for i in time:
         temp = datetime.fromtimestamp(i).hour
-        count_entry[temp]+=1
+        count_entry[temp] += 1
     max_traffic_hour = []
     min_traffic_hour = []
     max_traffic = max(count_entry)
@@ -88,12 +89,12 @@ def MinMaxTrafficTime(dataFrame):
         x.append(i)
         if count_entry == max_traffic:
             max_traffic_hour.append(i)
-        if count_entry ==min_traffic:
+        if count_entry == min_traffic:
             min_traffic_hour.append(i)
-    
-    plt.scatter(x,count_entry,color = "red")
-    plt.plot(x,count_entry,color = "blue")
+
+    plt.scatter(x, count_entry, color="red")
+    plt.plot(x, count_entry, color="blue")
     plt.xlabel("Hours")
     plt.ylabel("Traffic")
     plt.show()
-    return [max_traffic_hour,min_traffic_hour,max_traffic,min_traffic]
+    return [max_traffic_hour, min_traffic_hour, max_traffic, min_traffic]
