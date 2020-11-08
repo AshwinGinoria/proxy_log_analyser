@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from datetime import datetime
-from helpers import ReadLog, FindCount, PlotHistogram, minMaxTrafficTime, GetTopTenClients
+from helpers import ReadLog, PlotHistogram, GetTopTenClients, PlotAcceptedDeniedCount
 
 
 class MainWindow(QMainWindow):
