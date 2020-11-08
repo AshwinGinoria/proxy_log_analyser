@@ -1,6 +1,7 @@
 import pandas
 from collections import Counter
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # Returns log file data as a Dataframe
 #
@@ -60,3 +61,28 @@ def FindMostLeastFrequent(elementDictionary):
 def CountRequest(dataFrame, columnName, requestType):
     tagDictionary = FindCount(dataFrame, columnName)
     return tagDictionary[requestType]
+
+def min_max_traffic_time(dataFrame):
+    count_entry = [0]*24
+    time = list(dataFrame["Timestamp"])
+    for i in time:
+        temp = datetime.fromtimestamp(i).hour
+        count_entry[temp]+=1
+    max_traffic_hour = []
+    min_traffic_hour = []
+    max_traffic = max(count_entry)
+    min_traffic = min(count_entry)
+    x = []
+    for i in range(24):
+        x.append(i)
+        if count_entry == max_traffic:
+            max_traffic_hour.append(i)
+        if count_entry ==min_traffic:
+            min_traffic_hour.append(i)
+    
+    plt.scatter(x,count_entry,color = "red")
+    plt.plot(x,count_entry,color = "blue")
+    plt.xlabel("Hours")
+    plt.ylabel("Traffic")
+    plt.show()
+    return [max_traffic_hour,min_traffic_hour,max_traffic,min_traffic]
