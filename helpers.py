@@ -71,10 +71,17 @@ def min_max_traffic_time(dataFrame):
     min_traffic_hour = []
     max_traffic = max(count_entry)
     min_traffic = min(count_entry)
+    x = []
     for i in range(24):
+        x.append(i)
         if count_entry == max_traffic:
             max_traffic_hour.append(i)
         if count_entry ==min_traffic:
             min_traffic_hour.append(i)
     
-    return [max_traffic_hour,min_traffic,max_traffic,min_traffic]
+    plt.scatter(x,count_entry,color = "red")
+    plt.plot(x,count_entry,color = "blue")
+    plt.xlabel("Hours")
+    plt.ylabel("Traffic")
+    plt.show()
+    return [max_traffic_hour,min_traffic_hour,max_traffic,min_traffic]
