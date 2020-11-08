@@ -3,6 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from helpers import FindMostLeastFrequent, PlotHistogram, ReadLog, FindCount, PlotHistogram, FindMostLeastFrequent, CountRequest 
 from datetime import datetime
+from helpers import ReadLog, FindCount, PlotHistogram, minMaxTrafficTime
 
 
 class MainWindow(QMainWindow):
@@ -41,8 +42,12 @@ class MainWindow(QMainWindow):
         self.fileStatusLabel = QLabel(self, text="Status: No log selected")
 
         # Extra Feature Buttons
-        self.button1 = QPushButton("Button1")
-        self.button2 = QPushButton("Button2")
+        self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websited")
+        self.plotTimeVsWebCountButton.clicked.connect(lambda : minMaxTrafficTime(self.dataFrame))
+
+        self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
+        self.plotWebsiteFrequencyButton.clicked.connect(lambda: PlotHistogram(self.dataFrame,"URL","Frequeny"))
+
         self.button3 = QPushButton("Button3")
         self.button4 = QPushButton("Button4")
         self.button5 = QPushButton("Button5")
@@ -52,15 +57,14 @@ class MainWindow(QMainWindow):
 
         # Feature buttons arranged in a grid
         self.featureButtonsLayout = QGridLayout()
-        self.featureButtonsLayout.addWidget(self.button1, 0, 0, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button2, 0, 1, 1, 1)
+        self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
+        self.featureButtonsLayout.addWidget(self.plotWebsiteFrequencyButton, 0, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button3, 1, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button4, 1, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button5, 2, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button6, 2, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button7, 3, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button8, 3, 1, 1, 1)
-
 
         # Main Vertical Layout
         self.centralLayout.addWidget(self.filePickerButton)
