@@ -1,7 +1,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from helpers import ReadLog, FindCount, PlotHistogram
+from helpers import ReadLog, FindCount, PlotHistogram, minMaxTrafficTime
 import pandas as pd
 
 
@@ -44,7 +44,7 @@ class MainWindow(QMainWindow):
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websited")
-        # self.plotTimeVsWebCount.clicked.connect(self.func)
+        self.plotTimeVsWebCountButton.clicked.connect(lambda : minMaxTrafficTime(self.dataFrame))
 
         self.plotTimeVsBlockedWebCountButton = QPushButton(
             "Show Time vs &Blocked Websites count"

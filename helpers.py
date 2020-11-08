@@ -62,7 +62,7 @@ def CountRequest(dataFrame, columnName, requestType):
     tagDictionary = FindCount(dataFrame, columnName)
     return tagDictionary[requestType]
 
-def min_max_traffic_time(dataFrame):
+def minMaxTrafficTime(dataFrame):
     count_entry = [0]*24
     time = list(dataFrame["Timestamp"])
     for i in time:
