@@ -57,6 +57,7 @@ coverage.xml
 
 # Django stuff:
 *.log
+test.log-20161101
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -114,6 +115,9 @@ venv.bak/
 .spyderproject
 .spyproject
 
+# VS-Code project settings
+.vscode
+
 # Rope project settings
 .ropeproject
 
@@ -134,3 +138,5 @@ mini.log*
 
 # TestFile
 test.py
+test.ipynb
+test.txt
