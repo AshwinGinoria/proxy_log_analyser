@@ -86,3 +86,14 @@ def minMaxTrafficTime(dataFrame):
     plt.ylabel("Traffic")
     plt.show()
     return [max_traffic_hour,min_traffic_hour,max_traffic,min_traffic]
+
+def GetTopTenClients(dataFrame):
+    clientsRequestCounts = dataFrame['Client'].value_counts()
+
+    data = {'Clients': 'Number of Requests'}
+    for i in range(10):
+        client = clientsRequestCounts.keys()[i]
+        
+        data[client] = clientsRequestCounts[client]
+
+    return data

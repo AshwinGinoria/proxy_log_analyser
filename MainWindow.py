@@ -1,9 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from helpers import FindMostLeastFrequent, PlotHistogram, ReadLog, FindCount, PlotHistogram, FindMostLeastFrequent, CountRequest 
 from datetime import datetime
-from helpers import ReadLog, FindCount, PlotHistogram, minMaxTrafficTime
+from helpers import ReadLog, FindCount, PlotHistogram, minMaxTrafficTime, GetTopTenClients
 
 
 class MainWindow(QMainWindow):
@@ -49,6 +48,9 @@ class MainWindow(QMainWindow):
         self.plotWebsiteFrequencyButton.clicked.connect(lambda: PlotHistogram(self.dataFrame,"URL","Frequeny"))
 
         self.button3 = QPushButton("Button3")
+        self.button3.clicked.connect(
+            lambda: self.DisplayDict(GetTopTenClients(self.logData), "Top 10 Clients")
+        )
         self.button4 = QPushButton("Button4")
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
@@ -81,15 +83,36 @@ class MainWindow(QMainWindow):
             self.filePath = oldFilePath
             return
         
-        fileDate = datetime.strptime(self.filePath.split('-')[-1], '%Y%m%d')
+        fileDate = datetime.strptime(self.filePath[0].split('-')[-1], '%Y%m%d')
         
         self.fileStatusLabel.setText("Status: Loading Log of " + fileDate.strftime('%m/%d/%Y'))
         
         self.PrintLog("Loading File")
         self.logData = ReadLog(self.filePath[0])
-        self.PrintLog("[LOG] File Loaded")
+        self.PrintLog("File Loaded")
 
         self.fileStatusLabel.setText("Status: Log of " + fileDate.strftime('%m/%d/%Y') + "Loaded Successfully")
+
+
+    def DisplayDict(self, data, title = "DLG"):
+        dlg = QDialog(self)
+        dlg.setWindowTitle(title)
+
+        displayText = ""
+
+        for key, val in data.items():
+            displayText += key + ": " + str(val) + "\n"
+
+        dlgText = QTextEdit(dlg)
+        dlgText.setText(displayText)
+        dlgText.setReadOnly(True)
+
+        dlgLayout = QVBoxLayout(self)
+        dlgLayout.addWidget(dlgText)
+        dlg.setLayout(dlgLayout)
+
+        if dlg.exec_():
+            pass
 
     def PrintLog(self, entry):
         if (self.verbose == True):
