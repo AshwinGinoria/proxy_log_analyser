@@ -24,7 +24,7 @@ def ReadLog(filepath):
     df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True)
 
     df = df.drop([cols[3], cols[8]], axis=1)
-
+    print("DataFrame Loaded!")
     return df
 
 
@@ -40,7 +40,8 @@ def FindCount(dataFrame, columnName):
 
 
 # plots the histogram given a dictionary of key-value pairs
-def PlotHistogram(dictionaryObject, xLabel, yLabel):
+def PlotHistogram(dataFrame, xLabel, yLabel):
+    dictionaryObject = FindCount(dataFrame,xLabel)
     plt.bar(dictionaryObject.keys(), dictionaryObject.values())
     plt.xlabel(xLabel)
     plt.ylabel(yLabel)

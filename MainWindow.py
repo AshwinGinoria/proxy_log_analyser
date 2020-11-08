@@ -1,6 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from helpers import ReadLog, FindCount, PlotHistogram
+import pandas as pd
 
 
 class MainWindow(QMainWindow):
@@ -12,6 +14,18 @@ class MainWindow(QMainWindow):
         self.FilePath = ""
         self.resize(600, 400)
         self.styleSheet = ""
+        self.dataFrame = pd.DataFrame(data = [[1,1,1,1,1,1,1,1,1,1]],columns= [
+        "Timestamp",
+        "Elapsed Time",
+        "Client",
+        "Log Tag & HTTP Code",
+        "Size",
+        "Method",
+        "URL",
+        "UserID",
+        "Hierarchy & Hostname",
+        "Content type",
+    ])
         with open("design.qss") as qss:
             self.styleSheet = qss.read()
         self.setStyleSheet(self.styleSheet)
@@ -48,13 +62,17 @@ class MainWindow(QMainWindow):
             "Show Time vs &Blocked Websites count"
         )
         # self.plotTimeVsBlockedWebCountButton.clicked.connect(self.func)
-
+        
+        self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
+        self.plotWebsiteFrequencyButton.clicked.connect(self.WebFreq)
+        
         # Feature buttons arranged in a grid
         self.featureButtonsLayout = QGridLayout()
         self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
         self.featureButtonsLayout.addWidget(
             self.plotTimeVsBlockedWebCountButton, 0, 1, 1, 1
         )
+        self.featureButtonsLayout.addWidget(self.plotWebsiteFrequencyButton,1,0,1,1)
 
         # Main Vertical Layout
         self.centralLayout.addLayout(self.buttonLayout)
@@ -79,5 +97,11 @@ class MainWindow(QMainWindow):
 
         # Updates FileTextViewBox with new text
         with open(self.FilePath[0], "r") as File:
-            text = File.read()
-            self.fileTextViewBox.setText(text)
+            first3 = ""
+            for x in range(3):
+                first3 += next(File) 
+            print(first3)
+            self.fileTextViewBox.setText(first3)
+            self.dataFrame = ReadLog(self.FilePath[0])
+    def WebFreq(self):
+        PlotHistogram(self.dataFrame,"URL","Frequeny")
