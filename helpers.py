@@ -1,4 +1,5 @@
-import pandas
+import ray
+import pandas as pd
 from collections import Counter
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -19,7 +20,7 @@ def ReadLog(filepath):
         "Content type",
     ]
 
-    df = pandas.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
+    df = pd.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
 
     df[["Log Tag", "HTTP Code"]] = df[cols[3]].str.split("/", expand=True)
     df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True)
@@ -62,7 +63,7 @@ def CountRequest(dataFrame, columnName, requestType):
     tagDictionary = FindCount(dataFrame, columnName)
     return tagDictionary[requestType]
 
-def minMaxTrafficTime(dataFrame):
+def MinMaxTrafficTime(dataFrame):
     count_entry = [0]*24
     time = list(dataFrame["Timestamp"])
     for i in time:

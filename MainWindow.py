@@ -1,9 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from helpers import FindMostLeastFrequent, PlotHistogram, ReadLog, FindCount, PlotHistogram, FindMostLeastFrequent, CountRequest 
+from helpers import ReadLog, PlotHistogram, MinMaxTrafficTime 
 from datetime import datetime
-from helpers import ReadLog, FindCount, PlotHistogram, minMaxTrafficTime
 
 
 class MainWindow(QMainWindow):
@@ -14,7 +13,7 @@ class MainWindow(QMainWindow):
         
         super(QMainWindow, self).__init__(parent)
         self.setWindowTitle("Proxy Log Analyser")
-        self.resize(400, 225)
+        self.resize(600, 225)
         
         self.filePath = ""
         self.logData = None
@@ -43,10 +42,10 @@ class MainWindow(QMainWindow):
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websited")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : minMaxTrafficTime(self.dataFrame))
+        self.plotTimeVsWebCountButton.clicked.connect(lambda : MinMaxTrafficTime(self.logData))
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
-        self.plotWebsiteFrequencyButton.clicked.connect(lambda: PlotHistogram(self.dataFrame,"URL","Frequeny"))
+        self.plotWebsiteFrequencyButton.clicked.connect(lambda: PlotHistogram(self.logData,"URL","Frequeny"))
 
         self.button3 = QPushButton("Button3")
         self.button4 = QPushButton("Button4")
@@ -81,15 +80,15 @@ class MainWindow(QMainWindow):
             self.filePath = oldFilePath
             return
         
-        fileDate = datetime.strptime(self.filePath.split('-')[-1], '%Y%m%d')
+        fileDate = datetime.strptime(self.filePath[0].split('-')[-1], '%Y%m%d')
         
         self.fileStatusLabel.setText("Status: Loading Log of " + fileDate.strftime('%m/%d/%Y'))
         
         self.PrintLog("Loading File")
         self.logData = ReadLog(self.filePath[0])
-        self.PrintLog("[LOG] File Loaded")
+        self.PrintLog("File Loaded")
 
-        self.fileStatusLabel.setText("Status: Log of " + fileDate.strftime('%m/%d/%Y') + "Loaded Successfully")
+        self.fileStatusLabel.setText("Status: Log of " + fileDate.strftime('%d %b %Y') + "Loaded Successfully")
 
     def PrintLog(self, entry):
         if (self.verbose == True):
