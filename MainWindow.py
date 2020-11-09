@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
             lambda: CountWebsite(self.logData)
         )
 
-        self.button3 = QPushButton("Button3")
+        self.button3 = QPushButton("Top 10 Clients")
         self.button3.clicked.connect(
             lambda: self.DisplayDict(GetTopTenClients(self.logData), "Top 10 Clients")
         )

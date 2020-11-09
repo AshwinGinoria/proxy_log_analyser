@@ -135,6 +135,7 @@ dmypy.json
 # Input Sample
 access.log*
 mini.log*
+new.py
 
 # TestFile
 test.py

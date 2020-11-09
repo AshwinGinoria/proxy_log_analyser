@@ -71,7 +71,7 @@ def CountWebsite(dataFrame):
 
 
 def PlotAcceptedDeniedCount(dataFrame):
-    countAccepted = [0] * 24
+    countAll = [0] * 24
     countDenied = [0] * 24
     time = dataFrame["Timestamp"].values
     logTag = dataFrame["Log Tag"].values
@@ -79,25 +79,25 @@ def PlotAcceptedDeniedCount(dataFrame):
         hr = datetime.fromtimestamp(time[i]).hour
         if logTag[i] == "TCP_DENIED":
             countDenied[hr] += 1
-        else:
-            countAccepted[hr] += 1
+        
+        countAll[hr] += 1
     barWidth = 0.25
-    r1 = np.arange(len(countAccepted))
+    r1 = np.arange(len(countAll))
     r2 = [x + barWidth for x in r1]
     plt.bar(
         r1,
-        countAccepted,
+        countAll,
         color="blue",
         width=barWidth,
         edgecolor="white",
-        label="Acepted",
+        label="All",
     )
     plt.bar(
         r2, countDenied, color="red", width=barWidth, edgecolor="white", label="Denied"
     )
     plt.xlabel("Time", fontweight="bold")
     plt.xticks(
-        [r + barWidth for r in range(len(countAccepted))],
+        [r + barWidth for r in range(len(countAll))],
         [str(x) for x in range(1, 25)],
     )
 
