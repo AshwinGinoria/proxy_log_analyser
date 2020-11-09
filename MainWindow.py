@@ -1,8 +1,8 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from helpers import ReadLog, PlotHistogram, PlotAcceptedDeniedCount 
 from datetime import datetime
+from helpers import ReadLog, PlotHistogram, GetTopTenClients, PlotAcceptedDeniedCount
 
 
 class MainWindow(QMainWindow):
@@ -50,6 +50,9 @@ class MainWindow(QMainWindow):
         )
 
         self.button3 = QPushButton("Button3")
+        self.button3.clicked.connect(
+            lambda: self.DisplayDict(GetTopTenClients(self.logData), "Top 10 Clients")
+        )
         self.button4 = QPushButton("Button4")
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
@@ -95,6 +98,27 @@ class MainWindow(QMainWindow):
         self.fileStatusLabel.setText(
             "Status: Log of " + fileDate.strftime("%d %b %Y") + " Loaded Successfully"
         )
+
+
+    def DisplayDict(self, data, title = "DLG"):
+        dlg = QDialog(self)
+        dlg.setWindowTitle(title)
+
+        displayText = ""
+
+        for key, val in data.items():
+            displayText += key + ": " + str(val) + "\n"
+
+        dlgText = QTextEdit(dlg)
+        dlgText.setText(displayText)
+        dlgText.setReadOnly(True)
+
+        dlgLayout = QVBoxLayout(self)
+        dlgLayout.addWidget(dlgText)
+        dlg.setLayout(dlgLayout)
+
+        if dlg.exec_():
+            pass
 
     def PrintLog(self, entry):
         if self.verbose == True:
