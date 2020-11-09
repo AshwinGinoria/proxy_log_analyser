@@ -1,4 +1,4 @@
-#import ray
+# import ray
 import pandas as pd
 import numpy as np
 from collections import Counter
@@ -41,68 +41,76 @@ def ReadLog(filepath):
     return df
 
 
-# returns the number of occurrence of each unique element in a dataframe column
-def FindCount(dataFrame, columnName):
-    columnList = dataFrame[columnName].values
+def CountWebsite(dataFrame):
+
+    columnList = dataFrame["Domain Name"].values
     counterObj = Counter(columnList)
-    elementDictionary = {}
+
+    elementList = []
     for key, value in counterObj.items():
-        elementDictionary[key] = value
+        elementList.append([value, key])
 
-    return elementDictionary
+    elementList.sort(key=lambda x: int(x[0]))
+    elementList.reverse()
 
+    mostVisited = elementList[0][1]
+    leastVisited = elementList[-1][1]
 
-# plots the histogram given a dictionary of key-value pairs
-def PlotHistogram(dataFrame, xLabel, yLabel):
-    dictionaryObject = FindCount(dataFrame, xLabel)
-    plt.bar(dictionaryObject.keys(), dictionaryObject.values())
-    plt.xlabel(xLabel)
-    plt.ylabel(yLabel)
+    websites = [row[1] for row in elementList[:20]]
+    frequency = [row[0] for row in elementList[:20]]
+
+    plt.bar(websites, frequency)
+    plt.title("Most Frequently Visited Websites")
+    plt.xlabel("Domain Name")
+    plt.ylabel("Frequency")
+    plt.xticks(rotation=90)
+    plt.subplots_adjust(bottom=0.3)
     plt.show()
 
+    return (mostVisited, mostVisited)
 
-# function to find the most and least frequently visited ip
-def FindMostLeastFrequent(elementDictionary):
-    ipMax = max(elementDictionary, key=elementDictionary.get)
-    ipMin = min(elementDictionary, key=elementDictionary.get)
-
-    return (ipMax, ipMin)
-
-
-# returns the number of occurrence of a particular element from a column
-def CountRequest(dataFrame, columnName, requestType):
-    tagDictionary = FindCount(dataFrame, columnName)
-    return tagDictionary[requestType]
 
 def PlotAcceptedDeniedCount(dataFrame):
-    countAccepted = [0]*24
-    countDenied = [0]*24
+    countAccepted = [0] * 24
+    countDenied = [0] * 24
     time = dataFrame["Timestamp"].values
     logTag = dataFrame["Log Tag"].values
     for i in range(len(time)):
         hr = datetime.fromtimestamp(time[i]).hour
-        if logTag[i]=="TCP_DENIED":
-            countDenied[hr]+=1
+        if logTag[i] == "TCP_DENIED":
+            countDenied[hr] += 1
         else:
-            countAccepted[hr]+=1
+            countAccepted[hr] += 1
     barWidth = 0.25
     r1 = np.arange(len(countAccepted))
     r2 = [x + barWidth for x in r1]
-    plt.bar(r1, countAccepted, color='blue', width=barWidth, edgecolor='white', label='Acepted')
-    plt.bar(r2, countDenied, color='red', width=barWidth, edgecolor='white', label='Denied')
-    plt.xlabel('Time', fontweight='bold')
-    plt.xticks([r + barWidth for r in range(len(countAccepted))], [str(x) for x in range(1,25)])
- 
+    plt.bar(
+        r1,
+        countAccepted,
+        color="blue",
+        width=barWidth,
+        edgecolor="white",
+        label="Acepted",
+    )
+    plt.bar(
+        r2, countDenied, color="red", width=barWidth, edgecolor="white", label="Denied"
+    )
+    plt.xlabel("Time", fontweight="bold")
+    plt.xticks(
+        [r + barWidth for r in range(len(countAccepted))],
+        [str(x) for x in range(1, 25)],
+    )
+
     plt.legend()
     plt.show()
     
 def GetTopTenClients(dataFrame):
-    clientsRequestCounts = dataFrame['Client'].value_counts()
+    clientsRequestCounts = dataFrame["Client"].value_counts()
 
-    data = {'Clients': 'Number of Requests'}
+    data = {"Clients": "Number of Requests"}
     for i in range(10):
         client = clientsRequestCounts.keys()[i]
 
         data[client] = clientsRequestCounts[client]
 
-    return data 
+    return data
