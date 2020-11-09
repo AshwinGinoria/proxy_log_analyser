@@ -95,3 +95,14 @@ def PlotAcceptedDeniedCount(dataFrame):
  
     plt.legend()
     plt.show()
+    
+def GetTopTenClients(dataFrame):
+    clientsRequestCounts = dataFrame['Client'].value_counts()
+
+    data = {'Clients': 'Number of Requests'}
+    for i in range(10):
+        client = clientsRequestCounts.keys()[i]
+
+        data[client] = clientsRequestCounts[client]
+
+    return data 
