@@ -2,7 +2,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from datetime import datetime
-from helpers import ReadLog, PlotHistogram, GetTopTenClients, PlotAcceptedDeniedCount
+from helpers import ReadLog, CountWebsite, GetTopTenClients, PlotAcceptedDeniedCount
 
 
 class MainWindow(QMainWindow):
@@ -46,7 +46,7 @@ class MainWindow(QMainWindow):
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
         self.plotWebsiteFrequencyButton.clicked.connect(
-            lambda: PlotHistogram(self.logData, "Domain Name", "Frequeny")
+            lambda: CountWebsite(self.logData)
         )
 
         self.button3 = QPushButton("Button3")
