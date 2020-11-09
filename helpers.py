@@ -41,38 +41,33 @@ def ReadLog(filepath):
     return df
 
 
-# returns the number of occurrence of each unique element in a dataframe column
-def FindCount(dataFrame, columnName):
-    columnList = dataFrame[columnName].values
+def CountWebsite(dataFrame):
+
+    columnList = dataFrame["Domain Name"].values
     counterObj = Counter(columnList)
-    elementDictionary = {}
+
+    elementList=[]
     for key, value in counterObj.items():
-        elementDictionary[key] = value
+        elementList.append([value,key])
 
-    return elementDictionary
+    elementList.sort(key=lambda x: int(x[0]))
+    elementList.reverse()
 
+    mostVisited = elementList[0][1]
+    leastVisited = elementList[-1][1]
 
-# plots the histogram given a dictionary of key-value pairs
-def PlotHistogram(dataFrame, xLabel, yLabel):
-    dictionaryObject = FindCount(dataFrame, xLabel)
-    plt.bar(dictionaryObject.keys(), dictionaryObject.values())
-    plt.xlabel(xLabel)
-    plt.ylabel(yLabel)
+    websites=[row[1] for row in elementList[:20]]
+    frequency=[row[0] for row in elementList[:20]]
+
+    plt.bar(websites,frequency)
+    plt.title("Most Frequently Visited Websites")
+    plt.xlabel("Domain Name")
+    plt.ylabel("Frequency")
+    plt.xticks(rotation=90)
+    plt.subplots_adjust(bottom=0.3)
     plt.show()
 
-
-# function to find the most and least frequently visited ip
-def FindMostLeastFrequent(elementDictionary):
-    ipMax = max(elementDictionary, key=elementDictionary.get)
-    ipMin = min(elementDictionary, key=elementDictionary.get)
-
-    return (ipMax, ipMin)
-
-
-# returns the number of occurrence of a particular element from a column
-def CountRequest(dataFrame, columnName, requestType):
-    tagDictionary = FindCount(dataFrame, columnName)
-    return tagDictionary[requestType]
+    return (mostVisited, mostVisited)
 
 def PlotAcceptedDeniedCount(dataFrame):
     countAccepted = [0]*24
