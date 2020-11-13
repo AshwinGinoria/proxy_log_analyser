@@ -84,6 +84,7 @@ def PlotAcceptedDeniedCount(dataFrame):
     barWidth = 0.25
     r1 = np.arange(len(countAll))
     r2 = [x + barWidth for x in r1]
+    plt.ylabel("Number of Requests",fontweight = "bold")
     plt.bar(
         r1,
         countAll,
@@ -95,7 +96,7 @@ def PlotAcceptedDeniedCount(dataFrame):
     plt.bar(
         r2, countDenied, color="red", width=barWidth, edgecolor="white", label="Denied"
     )
-    plt.xlabel("Time", fontweight="bold")
+    plt.xlabel("Time(Hours of day)", fontweight="bold")
     plt.xticks(
         [r + barWidth for r in range(len(countAll))],
         [str(x) for x in range(1, 25)],
