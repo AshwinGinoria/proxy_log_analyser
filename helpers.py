@@ -65,11 +65,8 @@ def CountWebsite(dataFrame):
     plt.ylabel("Frequency")
     plt.xticks(rotation=90)
     plt.subplots_adjust(bottom=0.3)
-    plt.show()
-
-    return (mostVisited, mostVisited)
-
-
+    #plt.show()
+    # return websites,frequency
 def PlotAcceptedDeniedCount(dataFrame):
     countAll = [0] * 24
     countDenied = [0] * 24
@@ -103,7 +100,6 @@ def PlotAcceptedDeniedCount(dataFrame):
     )
 
     plt.legend()
-    plt.show()
     
 def GetTopTenClients(dataFrame):
     clientsRequestCounts = dataFrame["Client"].value_counts()

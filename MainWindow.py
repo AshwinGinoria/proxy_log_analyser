@@ -1,6 +1,9 @@
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import matplotlib.pyplot as plt
 from datetime import datetime
 from helpers import ReadLog, CountWebsite, GetTopTenClients, PlotAcceptedDeniedCount
 
@@ -40,13 +43,20 @@ class MainWindow(QMainWindow):
         # Selected File Display
         self.fileStatusLabel = QLabel(self, text="Status: No log selected")
 
+        # Creating canvas for displaying plots on main window
+        self.figure = plt.figure()
+        self.canvas = FigureCanvas(self.figure)
+        self.toolbar = NavigationToolbar(self.canvas, self)
+
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websites")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : PlotAcceptedDeniedCount(self.logData))
+        self.plotTimeVsWebCountButton.clicked.connect(
+            lambda: self.PlotOnCanvas(PlotAcceptedDeniedCount)
+        )
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
         self.plotWebsiteFrequencyButton.clicked.connect(
-            lambda: CountWebsite(self.logData)
+            lambda: self.PlotOnCanvas(CountWebsite)
         )
 
         self.button3 = QPushButton("Top 10 Clients")
@@ -73,6 +83,8 @@ class MainWindow(QMainWindow):
         # Main Vertical Layout
         self.centralLayout.addWidget(self.filePickerButton)
         self.centralLayout.addWidget(self.fileStatusLabel)
+        self.centralLayout.addWidget(self.toolbar)
+        self.centralLayout.addWidget(self.canvas)
         self.centralLayout.addLayout(self.featureButtonsLayout)
 
     # Choose File to perform Operations on
@@ -99,8 +111,12 @@ class MainWindow(QMainWindow):
             "Status: Log of " + fileDate.strftime("%d %b %Y") + " Loaded Successfully"
         )
 
+    def PlotOnCanvas(self, func):
+        self.figure.clear()
+        func(self.logData)
+        self.canvas.draw()
 
-    def DisplayDict(self, data, title = "DLG"):
+    def DisplayDict(self, data, title="DLG"):
         dlg = QDialog(self)
         dlg.setWindowTitle(title)
 
