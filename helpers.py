@@ -116,7 +116,7 @@ def GetTopTenClients(dataFrame):
 
     return data
 
-def GetNumberOfWebsitesVisited(time1, time2):
+def GetNumberOfWebsitesVisited(time1, time2, data):
     #     sample formats
     #     time1 = "24/12/12 12:33:22"
     #     time2 = "25/12/20 12:12:12"
@@ -130,3 +130,5 @@ def GetNumberOfWebsitesVisited(time1, time2):
         if hr<=end and hr>=start :
             d.add(hr)
     print("number of websites visited between %s and %s : %s" %(start, end, len(d)) )
+
+    return data
