@@ -118,11 +118,11 @@ def GetTopTenClients(dataFrame):
 
 def GetNumberOfWebsitesVisited(time1, time2, data):
     #     sample formats
-    #     time1 = "24/12/12 12:33:22"
-    #     time2 = "25/12/20 12:12:12"
+    #     time1 = "24/12/2012 12:33:22"
+    #     time2 = "25/12/2012 12:12:12"
     d=set()
-    start = datetime. strptime(time1, '%d/%m/%y %H:%M:%S')
-    end = datetime. strptime(time2, '%d/%m/%y %H:%M:%S')
+    start = datetime. strptime(time1, '%d/%m/%Y %H:%M:%S')
+    end = datetime. strptime(time2, '%d/%m/%Y %H:%M:%S')
     times = data["Timestamp"].values
     names = data["URI"].values
     for i in range(len(time)):
@@ -131,4 +131,4 @@ def GetNumberOfWebsitesVisited(time1, time2, data):
             d.add(hr)
     print("number of websites visited between %s and %s : %s" %(start, end, len(d)) )
 
-    return data
+    return len(d)
