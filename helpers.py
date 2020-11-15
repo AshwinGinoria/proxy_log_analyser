@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import dask.dataframe as dd
 from collections import Counter
 import matplotlib.pyplot as plt
 from datetime import datetime
@@ -20,23 +21,28 @@ class helpers():
             "Content type",
         ]
 
-        df = pd.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
+        df = dd.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
+        print("DataFrame Loaded")
 
-        df[["Log Tag", "HTTP Code"]] = df[cols[3]].str.split("/", expand=True)
-        df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True)
+        df[["Log Tag", "HTTP Code"]] = df[cols[3]].str.split("/", expand=True, n=2)
+        df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True, n=2)
+        print("Columns Splitted")
 
         # Extracting Domain from URI
         m = df["URI"].str.extract("(?<=http://)(.*?)(?=/)|(?<=https://)(.*?)(?=/)")
         m = m[0].fillna(m[1])
         df["Domain Name"] = m
-        df["Domain Name"].fillna(df["URI"].str.extract("()(.*?)(?=:)")[1], inplace=True)
+        df["Domain Name"] = df["Domain Name"].fillna(df["URI"].str.extract("()(.*?)(?=:)")[1])
+        print("Domains Extraced")
 
         # Dropping Useless Data to reduce RAM usage
         df = df.drop([cols[3], cols[7], cols[8]], axis=1)
+        print("Columns Dropped")
 
         # Dropping un-important websites
-        df = df.drop(df[df["Domain Name"] == "gateway.iitmandi.ac.in"].index)
-        df = df.drop(df[df["Domain Name"] == "ak.staticimgfarm.com"].index)
+        domainsToDrop = ["gateway.iitmandi.ac.in", "ak.staticimgfarm.com", "live.login.com"]
+        for domain in domainsToDrop:
+            df = df[df["Domain Name"] != domain]
 
         self.df = df
 
@@ -104,8 +110,6 @@ class helpers():
         plt.legend()
         plt.show()
         
-        countAll[hr] += 1
-    
     def GetTopTenClients(self):
         clientsRequestCounts = self.df["Client"].value_counts()
 
@@ -119,11 +123,11 @@ class helpers():
 
     def GetNumberOfWebsitesVisited(self, time1, time2):
         #     sample formats
-        #     time1 = "24/12/2012 12:33:22"
-        #     time2 = "25/12/2012 12:12:12"
+        #     time1 = "24/12/12 12:33:22"
+        #     time2 = "25/12/20 12:12:12"
         d=set()
-        start = datetime. strptime(time1, '%d/%m/%Y %H:%M:%S')
-        end = datetime. strptime(time2, '%d/%m/%Y %H:%M:%S')
+        start = datetime.strptime(time1, '%d/%m/%y %H:%M:%S')
+        end = datetime. strptime(time2, '%d/%m/%y %H:%M:%S')
         times = self.df["Timestamp"].values
         names = self.df["URI"].values
         for i in range(len(time)):
@@ -131,5 +135,3 @@ class helpers():
             if hr<=end and hr>=start :
                 d.add(hr)
         print("number of websites visited between %s and %s : %s" %(start, end, len(d)) )
-
-        return len(d)
