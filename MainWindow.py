@@ -2,8 +2,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from datetime import datetime
-from helpers import ReadLog, CountWebsite, GetTopTenClients, PlotAcceptedDeniedCount
+from helpers import helpers
 
+Helpers = helpers()
 
 class MainWindow(QMainWindow):
     # Initializes Window Geometry and Important Variables
@@ -16,7 +17,6 @@ class MainWindow(QMainWindow):
         self.resize(600, 225)
 
         self.filePath = ""
-        self.logData = None
         self.styleSheet = ""
         with open("design.qss") as qss:
             self.styleSheet = qss.read()
@@ -42,16 +42,16 @@ class MainWindow(QMainWindow):
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websites")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : PlotAcceptedDeniedCount(self.logData))
+        self.plotTimeVsWebCountButton.clicked.connect(lambda : Helpers.PlotAcceptedDeniedCount())
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
         self.plotWebsiteFrequencyButton.clicked.connect(
-            lambda: CountWebsite(self.logData)
+            lambda: Helpers.CountWebsite()
         )
 
         self.button3 = QPushButton("Top 10 Clients")
         self.button3.clicked.connect(
-            lambda: self.DisplayDict(GetTopTenClients(self.logData), "Top 10 Clients")
+            lambda: self.DisplayDict(Helpers.GetTopTenClients(), "Top 10 Clients")
         )
         self.button4 = QPushButton("Button4")
         self.button5 = QPushButton("Button5")
@@ -92,7 +92,7 @@ class MainWindow(QMainWindow):
         )
 
         self.PrintLog("Loading File")
-        self.logData = ReadLog(self.filePath[0])
+        Helpers.ReadLog(filepath=self.filePath[0])
         self.PrintLog("File Loaded")
 
         self.fileStatusLabel.setText(
