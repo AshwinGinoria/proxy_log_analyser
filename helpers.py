@@ -12,27 +12,37 @@ class helpers():
             "Timestamp",
             "Elapsed Time",
             "Client",
-            "Log Tag & HTTP Code",
+            "Log_TagHTTP_Code",
             "Size",
             "Method",
             "URI",
             "UserID",
-            "Hierarchy & Hostname",
-            "Content type",
+            "HierarchyHostname",
+            "Content_type",
         ]
 
+        # Reading File
         df = dd.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
         print("DataFrame Loaded")
 
-        df[["Log Tag", "HTTP Code"]] = df[cols[3]].str.split("/", expand=True, n=2)
-        df[["Hierarchy", "Hostname"]] = df[cols[8]].str.split("/", expand=True, n=2)
+        # Separating Log_Tag and HTTP_Code
+        Log_Tag = df.Log_TagHTTP_Code.apply(lambda x: str(x).split('/')[0], meta=object)
+        HTTP_Code = df.Log_TagHTTP_Code.apply(lambda x: x.split('/')[1], meta=object)
+        df = df.assign(Log_Tag=Log_Tag)
+        df = df.assign(HTTP_Code=HTTP_Code)
+
+        # Separating Hostname and Hierarchy
+        Hierarchy = df.HierarchyHostname.apply(lambda x: x.split('/')[0], meta=object)
+        Hostname = df.HierarchyHostname.apply(lambda x: x.split('/')[1], meta=object)
+        df = df.assign(Hierarchy=Hierarchy)
+        df = df.assign(Hostname=Hostname)
         print("Columns Splitted")
 
         # Extracting Domain from URI
         m = df["URI"].str.extract("(?<=http://)(.*?)(?=/)|(?<=https://)(.*?)(?=/)")
         m = m[0].fillna(m[1])
-        df["Domain Name"] = m
-        df["Domain Name"] = df["Domain Name"].fillna(df["URI"].str.extract("()(.*?)(?=:)")[1])
+        df["Domain_Name"] = m
+        df["Domain_Name"] = df["Domain_Name"].fillna(df["URI"].str.extract("()(.*?)(?=:)")[1])
         print("Domains Extraced")
 
         # Dropping Useless Data to reduce RAM usage
@@ -42,7 +52,8 @@ class helpers():
         # Dropping un-important websites
         domainsToDrop = ["gateway.iitmandi.ac.in", "ak.staticimgfarm.com", "live.login.com"]
         for domain in domainsToDrop:
-            df = df[df["Domain Name"] != domain]
+            df = df[df["Domain_Name"] != domain]
+        print("Filtered out Domains")
 
         self.df = df
 
@@ -111,7 +122,8 @@ class helpers():
         plt.show()
         
     def GetTopTenClients(self):
-        clientsRequestCounts = self.df["Client"].value_counts()
+        print("In GetTopTenClients")
+        clientsRequestCounts = self.df["Client"].value_counts().compute()
 
         data = {"Clients": "Number of Requests"}
         for i in range(10):
