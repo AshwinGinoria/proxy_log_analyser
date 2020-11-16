@@ -59,7 +59,7 @@ class helpers():
 
     def CountWebsite(self):
 
-        columnList = self.df["Domain Name"].values
+        columnList = self.df["Domain_Name"].values.compute()
         counterObj = Counter(columnList)
 
         elementList = []
@@ -89,14 +89,16 @@ class helpers():
     def PlotAcceptedDeniedCount(self):
         countAll = [0] * 24
         countDenied = [0] * 24
-        time = self.df["Timestamp"].values
-        logTag = self.df["Log Tag"].values
-        for i in range(len(time)):
-            hr = datetime.fromtimestamp(time[i]).hour
-            if logTag[i] == "TCP_DENIED":
+        time = self.df["Timestamp"].values.compute()
+        logTag = self.df["Log_Tag"].values.compute()
+        z = 0
+        for i in time:
+            hr = datetime.fromtimestamp(i).hour
+            if logTag[z] == "TCP_DENIED":
                 countDenied[hr] += 1
             
             countAll[hr] += 1
+            z+=1
         barWidth = 0.25
         r1 = np.arange(len(countAll))
         r2 = [x + barWidth for x in r1]
@@ -138,12 +140,10 @@ class helpers():
         #     time1 = "24/12/12 12:33:22"
         #     time2 = "25/12/20 12:12:12"
         d=set()
-        start = datetime.strptime(time1, '%d/%m/%y %H:%M:%S')
-        end = datetime. strptime(time2, '%d/%m/%y %H:%M:%S')
-        times = self.df["Timestamp"].values
-        names = self.df["URI"].values
-        for i in range(len(time)):
-            hr = datetime.fromtimestamp(times[i])
-            if hr<=end and hr>=start :
+        times = self.df["Timestamp"].values.compute()
+        names = self.df["URI"].values.compute()
+        for i in times:
+            hr = i
+            if hr<=time2 and hr>=time1 :
                 d.add(hr)
-        print("number of websites visited between %s and %s : %s" %(start, end, len(d)) )
+        print("number of websites visited between %s and %s : %s" %(time1,time2, len(d)) )
