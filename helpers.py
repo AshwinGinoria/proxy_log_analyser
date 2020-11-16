@@ -59,25 +59,22 @@ class helpers():
 
     def CountWebsite(self):
 
-        columnList = self.df["Domain Name"].values
-        counterObj = Counter(columnList)
+        columnList = self.df["Domain_Name"].value_counts().compute()
 
-        elementList = []
-        for key, value in counterObj.items():
-            elementList.append([value, key])
+        elementList = columnList.nlargest(n=20)
+            
+            
+        mostVisited = columnList.max()
+        
 
-        elementList.sort(key=lambda x: int(x[0]))
-        elementList.reverse()
-
-        mostVisited = elementList[0][1]
-        leastVisited = elementList[-1][1]
-
-        websites = [row[1] for row in elementList[:20]]
-        frequency = [row[0] for row in elementList[:20]]
+        leastVisited = columnList.min()
+        
+        websites = [key for key,val in elementList.items()]
+        frequency = [val for key,val in elementList.items()]
 
         plt.bar(websites, frequency)
         plt.title("Most Frequently Visited Websites")
-        plt.xlabel("Domain Name")
+        plt.xlabel("Domain_Name")
         plt.ylabel("Frequency")
         plt.xticks(rotation=90)
         plt.subplots_adjust(bottom=0.3)
