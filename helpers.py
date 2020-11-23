@@ -24,7 +24,7 @@ class helpers():
         # Reading File
         df = dd.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
         print("DataFrame Loaded")
-
+        
         # Separating Log_Tag and HTTP_Code
         Log_Tag = df.Log_TagHTTP_Code.apply(lambda x: str(x).split('/')[0], meta=object)
         HTTP_Code = df.Log_TagHTTP_Code.apply(lambda x: x.split('/')[1], meta=object)
@@ -48,6 +48,9 @@ class helpers():
         # Dropping Useless Data to reduce RAM usage
         df = df.drop([cols[3], cols[7], cols[8]], axis=1)
         print("Columns Dropped")
+        
+        df["Timestamp"] = dd.to_datetime(df["Timestamp"], unit='s')
+        print("timestamps converted")
 
         # Dropping un-important websites
         domainsToDrop = ["gateway.iitmandi.ac.in", "ak.staticimgfarm.com", "live.login.com"]
@@ -90,7 +93,7 @@ class helpers():
         logTag = self.df["Log_Tag"].values.compute()
         z = 0
         for i in time:
-            hr = datetime.fromtimestamp(i).hour
+            hr = i.hour
             if logTag[z] == "TCP_DENIED":
                 countDenied[hr] += 1
             
@@ -132,15 +135,23 @@ class helpers():
 
         return data
 
-    def GetNumberOfWebsitesVisited(self, time1, time2):
+    def NumberOfUniqueWebsites(self, time1, time2):
         #     sample formats
         #     time1 = "24/12/12 12:33:22"
         #     time2 = "25/12/20 12:12:12"
-        d=set()
-        times = self.df["Timestamp"].values.compute()
-        names = self.df["URI"].values.compute()
-        for i in times:
-            hr = i
-            if hr<=time2 and hr>=time1 :
-                d.add(hr)
-        print("number of websites visited between %s and %s : %s" %(time1,time2, len(d)) )
+        #     dd/mm/yy hh:mm:ss
+
+        start = datetime. strptime(time1, '%d/%m/%y %H:%M:%S')
+        end = datetime. strptime(time2, '%d/%m/%y %H:%M:%S')
+        times = self.df["Timestamp"].values
+        names = self.df["Domain_Name"].values
+        tmp = self.df.loc[(self.df["Timestamp"]<=end) & (self.df["Timestamp"]>=start), ["Domain_Name"]]
+#       alternate(slower) implementation  
+#         d=set()
+#       for i in range(len(times)):
+#             hr = datetime.fromtimestamp(times[i])
+#             if(i==0 or i==len(times)-1):
+#                 print(hr)
+#             if hr<=end and hr>=start :
+#                 d.add(names[i])
+        print("number of unique websites visited between %s and %s : %s" %(time1,time2, len(tmp.drop_duplicates(subset=["Domain_Name"])) ) ) 
