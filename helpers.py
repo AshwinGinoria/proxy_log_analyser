@@ -59,6 +59,7 @@ class helpers():
         print("Filtered out Domains")
 
         self.df = df
+    
 
     def CountWebsite(self):
 
@@ -89,16 +90,16 @@ class helpers():
     def PlotAcceptedDeniedCount(self):
         countAll = [0] * 24
         countDenied = [0] * 24
-        time = self.df["Timestamp"].values.compute()
-        logTag = self.df["Log_Tag"].values.compute()
+        time = self.df["Timestamp"]
+        logTag = self.df["Log_Tag"]
         z = 0
-        for i in time:
+        #print(logTag)
+        for i,z in zip(time,logTag):
             hr = i.hour
-            if logTag[z] == "TCP_DENIED":
+            if z == "TCP_DENIED":
                 countDenied[hr] += 1
             
             countAll[hr] += 1
-            z+=1
         barWidth = 0.25
         r1 = np.arange(len(countAll))
         r2 = [x + barWidth for x in r1]
@@ -155,3 +156,4 @@ class helpers():
 #             if hr<=end and hr>=start :
 #                 d.add(names[i])
         print("number of unique websites visited between %s and %s : %s" %(time1,time2, len(tmp.drop_duplicates(subset=["Domain_Name"])) ) ) 
+
