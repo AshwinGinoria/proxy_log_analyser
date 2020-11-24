@@ -82,7 +82,7 @@ class helpers():
         plt.ylabel("Frequency")
         plt.xticks(rotation=90)
         plt.subplots_adjust(bottom=0.3)
-        plt.show()
+        #plt.show()
 
         return (mostVisited, mostVisited)
 
@@ -122,7 +122,7 @@ class helpers():
         )
 
         plt.legend()
-        plt.show()
+        #plt.show()
         
     def GetTopTenClients(self):
         print("In GetTopTenClients")
@@ -138,7 +138,7 @@ class helpers():
 
     def NumberOfUniqueWebsites(self, time1, time2):
         #     sample formats
-        #     time1 = "24/12/12 12:33:22"
+        #     time1 = "24/12/20 12:33:22"
         #     time2 = "25/12/20 12:12:12"
         #     dd/mm/yy hh:mm:ss
 

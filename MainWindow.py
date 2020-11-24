@@ -50,11 +50,11 @@ class MainWindow(QMainWindow):
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websites")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : Helpers.PlotAcceptedDeniedCount())
+        self.plotTimeVsWebCountButton.clicked.connect(lambda : self.PlotOnCanvas(Helpers.PlotAcceptedDeniedCount))
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
         self.plotWebsiteFrequencyButton.clicked.connect(
-            lambda: Helpers.CountWebsite()
+            lambda: self.PlotOnCanvas(Helpers.CountWebsite)
         )
 
         self.button3 = QPushButton("Top 10 Clients")
@@ -111,7 +111,7 @@ class MainWindow(QMainWindow):
 
     def PlotOnCanvas(self, func):
         self.figure.clear()
-        func(self.logData)
+        func()
         self.canvas.draw()
 
     def DisplayDict(self, data, title="DLG"):
