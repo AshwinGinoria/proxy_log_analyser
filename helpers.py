@@ -4,6 +4,7 @@ import dask.dataframe as dd
 from collections import Counter
 import matplotlib.pyplot as plt
 from datetime import datetime
+import dask
 
 class helpers():
     # Returns log file data as a Dataframe
@@ -127,7 +128,7 @@ class helpers():
     def GetTopTenClients(self):
         print("In GetTopTenClients")
         clientsRequestCounts = self.df["Client"].value_counts().compute()
-
+        print(clientsRequestCounts.head())
         data = {"Clients": "Number of Requests"}
         for i in range(10):
             client = clientsRequestCounts.keys()[i]
@@ -189,10 +190,10 @@ class helpers():
 
         start = datetime. strptime(time1, '%d/%m/%y %H:%M:%S')
         end = datetime. strptime(time2, '%d/%m/%y %H:%M:%S')
-        times = self.df["Timestamp"].values
-        names = self.df["Domain_Name"].values
-        tmp = self.df.loc[(self.df["Timestamp"]<=end) & (self.df["Timestamp"]>=start), ["Domain_Name"]]
+        tmp = self.df.loc[(self.df["Timestamp"]<=end) & (self.df["Timestamp"]>=start)]
 #       alternate(slower) implementation  
+#         times = self.df["Timestamp"].values
+#         names = self.df["Domain_Name"].values
 #         d=set()
 #       for i in range(len(times)):
 #             hr = datetime.fromtimestamp(times[i])
@@ -200,5 +201,11 @@ class helpers():
 #                 print(hr)
 #             if hr<=end and hr>=start :
 #                 d.add(names[i])
-        print("number of unique websites visited between %s and %s : %s" %(time1,time2, len(tmp.drop_duplicates(subset=["Domain_Name"])) ) ) 
+#         print(tmp.tail())
+        denied_requests = len(tmp.loc[tmp["Log_Tag"]=="TCP_DENIED"])
+        different_clients = len(tmp.drop_duplicates(subset=["Client"]))
+        different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
+        mylist = [denied_requests, different_clients, different_websites]
+        mylist = dask.compute(*mylist)
+        print("between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s" %(time1,time2, mylist[1], mylist[2], mylist[0]) )
 
