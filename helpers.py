@@ -58,7 +58,7 @@ class Helpers:
         )
 
         # Dropping Useless Data to reduce RAM usage
-        logger.debug("Dropping Useliess Columns")
+        logger.debug("Dropping Useless Columns")
         df = df.drop([cols[3], cols[7], cols[8]], axis=1)
 
         df["Timestamp"] = dd.to_datetime(df["Timestamp"], unit="s")
@@ -153,6 +153,7 @@ class Helpers:
         return data
 
     def PeakHourForEachWebsites(self):
+        logger.info("Calculating Peak time for each Domain")
 
         Websites = self.df["Domain_Name"]
         times = self.df["Timestamp"]
