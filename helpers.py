@@ -135,6 +135,51 @@ class helpers():
             data[client] = clientsRequestCounts[client]
 
         return data
+    
+    
+    def PeakHourForEachWebsites(self):
+        
+        Websites = self.df["Domain_Name"]
+        times = self.df["Timestamp"]
+        WebsitesList = {}
+        
+        for i in Websites:
+            WebsitesList[i] = [0]*24
+        
+        for i,j in zip(Websites,times):
+            WebsitesList[i][j.hour]+=1
+        
+        MostActiveHour = {}
+        
+        for i in Websites:
+            MostActiveHour[i] = WebsitesList[i].index(max(WebsitesList[i]))
+        
+        Hours = []
+        for i in WebsitesList:
+            Hours.append(sum(WebsitesList[i]))
+        
+        Hours.sort(reverse = True)
+        Hours = Hours[:20]
+        
+        TopTwenty = {}
+        
+        Count = 0
+        for i in WebsitesList:
+            if sum(WebsitesList[i]) in Hours and Count<20:
+                TopTwenty[i] = MostActiveHour[i]
+                Count+=1
+        
+        plt.bar(TopTwenty.keys(),TopTwenty.values())
+        plt.title("Peak Hours For Top 20 Visited websites : ")
+        plt.xlabel("Domain_Name")
+        plt.ylabel("Peak_Hour")
+        plt.xticks(rotation=90)
+        plt.subplots_adjust(bottom=0.3)
+        plt.show()
+            
+        return MostActiveHour
+        
+        
 
     def NumberOfUniqueWebsites(self, time1, time2):
         #     sample formats
