@@ -25,7 +25,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Proxy Log Analyser")
         self.resize(600, 225)
 
-        self.filePath = ""
+        self.fileNames = ""
         self.styleSheet = ""
         with open("design.qss") as qss:
             self.styleSheet = qss.read()
@@ -99,26 +99,19 @@ class MainWindow(QMainWindow):
     def FilePicker(self):
         logger.info("Opening File Picker")
 
-        oldFilePath = self.filePath
-        self.filePath = QFileDialog.getOpenFileName(self, "Open log File")
+        oldFileNames = self.fileNames
+        self.fileNames = QFileDialog.getOpenFileNames(self, "Open log Files")
 
         # Reverts Changes if No file is Selected or Operation is Cancelled
-        if self.filePath[0] == "":
+        if self.fileNames[0] == []:
             logger.debug("No file path provided")
-            self.filePath = oldFilePath
+            self.fileNames = oldFileNames
             return
 
-        fileDate = datetime.strptime(self.filePath[0].split("-")[-1], "%Y%m%d")
-
-        logger.debug("Setting log Status to Loading")
-        self.fileStatusLabel.setText(
-            "Status: Loading Log of " + fileDate.strftime("%m/%d/%Y")
-        )
-
-        helpers.ReadLog(filepath=self.filePath[0])
+        helpers.ReadLog(listFiles=self.fileNames[0])
 
         self.fileStatusLabel.setText(
-            "Status: Log of " + fileDate.strftime("%d %b %Y") + " Loaded Successfully"
+            "Status: " + str(len(self.fileNames[0])) + " Loaded Successfully"
         )
 
     def PlotOnCanvas(self, func):

@@ -14,8 +14,8 @@ logger.setLevel(logging.DEBUG)
 
 class Helpers:
     # Returns log file data as a Dataframe
-    def ReadLog(self, filepath):
-        logger.info("Reading log from " + filepath)
+    def ReadLog(self, listFiles):
+        logger.info("Reading Data")
 
         cols = [
             "Timestamp",
@@ -30,9 +30,14 @@ class Helpers:
             "Content_type",
         ]
 
-        # Reading File
-        logger.debug("Loading Data into dask dataframe")
-        df = dd.read_csv(filepath, names=cols, delim_whitespace=True, header=None)
+        logger.debug("Reading " + listFiles[0])
+        df = dd.read_csv(listFiles[0], names=cols, delim_whitespace=True, header=None)
+        
+        for filePath in listFiles[1:]:
+            logger.debug("Reading " + filePath)
+            # Reading File
+            df = df.append(dd.read_csv(filePath, names=cols, delim_whitespace=True, header=None))
+
 
         # Separating Log_Tag and HTTP_Code
         logger.debug("Splitting LogTag and HTTP Code")
