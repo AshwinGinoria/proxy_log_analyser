@@ -101,16 +101,16 @@ class Helpers:
     def PlotAcceptedDeniedCount(self):
         countAll = [0] * 24
         countDenied = [0] * 24
-        time = self.df["Timestamp"].values.compute()
-        logTag = self.df["Log_Tag"].values.compute()
+        time = self.df["Timestamp"]
+        logTag = self.df["Log_Tag"]
         z = 0
-        for i in time:
+        # print(logTag)
+        for i, z in zip(time, logTag):
             hr = i.hour
-            if logTag[z] == "TCP_DENIED":
+            if z == "TCP_DENIED":
                 countDenied[hr] += 1
 
             countAll[hr] += 1
-            z += 1
         barWidth = 0.25
         r1 = np.arange(len(countAll))
         r2 = [x + barWidth for x in r1]
@@ -152,6 +152,48 @@ class Helpers:
 
         return data
 
+    def PeakHourForEachWebsites(self):
+
+        Websites = self.df["Domain_Name"]
+        times = self.df["Timestamp"]
+        WebsitesList = {}
+
+        for i in Websites:
+            WebsitesList[i] = [0] * 24
+
+        for i, j in zip(Websites, times):
+            WebsitesList[i][j.hour] += 1
+
+        MostActiveHour = {}
+
+        for i in Websites:
+            MostActiveHour[i] = WebsitesList[i].index(max(WebsitesList[i]))
+
+        Hours = []
+        for i in WebsitesList:
+            Hours.append(sum(WebsitesList[i]))
+
+        Hours.sort(reverse=True)
+        Hours = Hours[:20]
+
+        TopTwenty = {}
+
+        Count = 0
+        for i in WebsitesList:
+            if sum(WebsitesList[i]) in Hours and Count < 20:
+                TopTwenty[i] = MostActiveHour[i]
+                Count += 1
+
+        plt.bar(TopTwenty.keys(), TopTwenty.values())
+        plt.title("Peak Hours For Top 20 Visited websites : ")
+        plt.xlabel("Domain_Name")
+        plt.ylabel("Peak_Hour")
+        plt.xticks(rotation=90)
+        plt.subplots_adjust(bottom=0.3)
+        plt.show()
+
+        return MostActiveHour
+
     def GetNumberOfUniqueWebsites(self, time1, time2):
         logger.info("Calculating Number of Unique Websites in the given time-frame.")
         #     sample formats
@@ -163,6 +205,7 @@ class Helpers:
         end = datetime.strptime(time2, "%d/%m/%y %H:%M:%S")
         times = self.df["Timestamp"].values
         names = self.df["Domain_Name"].values
+
         tmp = self.df.loc[
             (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start),
             ["Domain_Name"],
