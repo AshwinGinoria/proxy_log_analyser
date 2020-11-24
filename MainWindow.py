@@ -23,7 +23,7 @@ class MainWindow(QMainWindow):
 
         super(QMainWindow, self).__init__(parent)
         self.setWindowTitle("Proxy Log Analyser")
-        self.resize(600, 225)
+        self.resize(800, 700)
 
         self.fileNames = ""
         self.styleSheet = ""
@@ -51,14 +51,28 @@ class MainWindow(QMainWindow):
         # Selected File Display
         self.fileStatusLabel = QLabel(self, text="Status: No log selected")
 
+        self.dlgText = QTextEdit(self.centralWidget)
+        # self.dlgText.setHidden(True)
+
         # Creating canvas for displaying plots on main window
-        self.figure = plt.figure()
-        self.canvas = FigureCanvas(self.figure)
-        self.toolbar = NavigationToolbar(self.canvas, self)
+        self.plotWidget = QWidget(self.centralWidget)
+        self.fig, self.ax = plt.subplots()
+        self.figWidget = FigureCanvas(self.fig)
+        self.figToolbar = NavigationToolbar(self.figWidget, self.plotWidget)
+
+        self.plotLayout = QVBoxLayout(self.plotWidget)
+        self.plotLayout.addWidget(self.figToolbar)
+        self.plotLayout.addWidget(self.figWidget)
+        self.plotLayout.setContentsMargins(15, 15, 15, 15)
+
+        self.plotWidget.setLayout(self.plotLayout)
+        self.plotWidget.setHidden(True)
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websites")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : self.PlotOnCanvas(helpers.PlotAcceptedDeniedCount))
+        self.plotTimeVsWebCountButton.clicked.connect(
+            lambda: self.PlotOnCanvas(helpers.PlotAcceptedDeniedCount)
+        )
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
         self.plotWebsiteFrequencyButton.clicked.connect(
@@ -89,8 +103,8 @@ class MainWindow(QMainWindow):
         # Main Vertical Layout
         self.centralLayout.addWidget(self.filePickerButton)
         self.centralLayout.addWidget(self.fileStatusLabel)
-        self.centralLayout.addWidget(self.toolbar)
-        self.centralLayout.addWidget(self.canvas)
+        self.centralLayout.addWidget(self.dlgText)
+        self.centralLayout.addWidget(self.plotWidget)
         self.centralLayout.addLayout(self.featureButtonsLayout)
 
         logger.debug("UI-Setup complete!!")
@@ -114,34 +128,29 @@ class MainWindow(QMainWindow):
             "Status: " + str(len(self.fileNames[0])) + " Loaded Successfully"
         )
 
-    def PlotOnCanvas(self, func):
-        logger.info("Clearing Canvas")
+    def PlotOnCanvas(self, plottingFunc):
+        logger.info("Plotting Data")
+        self.ax.cla()
 
-        self.figure.clear()
-        func()
+        self.ax = plottingFunc(self.ax)
 
-        logger.debug("Drawing plot on canvas")
-        self.canvas.draw()
-        logger.debug("Plot Drawn Sucessfully")
+        plt.tight_layout()
+
+        self.figWidget.draw()
+
+        logger.debug("Displaying Plot")
+        self.dlgText.setHidden(True)
+        self.plotWidget.setHidden(False)
 
     def DisplayDict(self, data, title="DLG"):
-        logger.info("Displaying Result")
-
-        dlg = QDialog(self)
-        dlg.setWindowTitle(title)
-
+        logger.info("Parsing Recieved Data")
         displayText = ""
 
         for key, val in data.items():
             displayText += key + ": " + str(val) + "\n"
 
-        dlgText = QTextEdit(dlg)
-        dlgText.setText(displayText)
-        dlgText.setReadOnly(True)
+        self.dlgText.setReadOnly(True)
+        self.dlgText.setText(displayText)
 
-        dlgLayout = QVBoxLayout(self)
-        dlgLayout.addWidget(dlgText)
-        dlg.setLayout(dlgLayout)
-
-        if dlg.exec_():
-            pass
+        self.plotWidget.setHidden(True)
+        self.dlgText.setHidden(False)

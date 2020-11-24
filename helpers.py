@@ -32,12 +32,13 @@ class Helpers:
 
         logger.debug("Reading " + listFiles[0])
         df = dd.read_csv(listFiles[0], names=cols, delim_whitespace=True, header=None)
-        
+
         for filePath in listFiles[1:]:
             logger.debug("Reading " + filePath)
             # Reading File
-            df = df.append(dd.read_csv(filePath, names=cols, delim_whitespace=True, header=None))
-
+            df = df.append(
+                dd.read_csv(filePath, names=cols, delim_whitespace=True, header=None)
+            )
 
         # Separating Log_Tag and HTTP_Code
         logger.debug("Splitting LogTag and HTTP Code")
@@ -81,7 +82,7 @@ class Helpers:
         logger.info("Data Read Successfully")
         self.df = df
 
-    def CountWebsite(self):
+    def CountWebsite(self, ax):
         logger.info("Counting Most Visited Domains")
 
         columnList = self.df["Domain_Name"].value_counts().compute()
@@ -93,25 +94,23 @@ class Helpers:
         websites = [key for key, val in elementList.items()]
         frequency = [val for key, val in elementList.items()]
 
-        plt.bar(websites, frequency)
-        plt.title("Most Frequently Visited Websites")
-        plt.xlabel("Domain_Name")
-        plt.ylabel("Frequency")
-        plt.xticks(rotation=90)
-        plt.subplots_adjust(bottom=0.3)
-        plt.show()
+        ax.bar(websites, frequency)
+        ax.set_title("Most Frequently Visited Websites")
+        ax.set_xlabel("Domain_Name")
+        ax.set_ylabel("Frequency")
+        ax.tick_params(labelrotation=60)
 
-        return (mostVisited, mostVisited)
+        return ax
 
-    def PlotAcceptedDeniedCount(self):
-        
+    def PlotAcceptedDeniedCount(self, ax):
+
         logger.info("Counting Total Requests")
         countAll = [0] * 24
         countDenied = [0] * 24
-        
+
         time = self.df["Timestamp"]
         logTag = self.df["Log_Tag"]
-        
+
         logger.debug("Counting Hourly Denied Requests ")
         for i, z in zip(time, logTag):
             hr = i.hour
@@ -119,11 +118,11 @@ class Helpers:
                 countDenied[hr] += 1
 
             countAll[hr] += 1
-        
+
         barWidth = 0.25
 
-        plt.ylabel("Number of Requests", fontweight="bold")
-        plt.bar(
+        ax.set_ylabel("Number of Requests", fontweight="bold")
+        ax.bar(
             np.arange(24),
             countAll,
             color="blue",
@@ -131,7 +130,7 @@ class Helpers:
             edgecolor="white",
             label="All",
         )
-        plt.bar(
+        ax.bar(
             np.arange(24) + barWidth,
             countDenied,
             color="red",
@@ -139,14 +138,11 @@ class Helpers:
             edgecolor="white",
             label="Denied",
         )
-        plt.xlabel("Time(Hours of day)", fontweight="bold")
-        plt.xticks(
-            [r + barWidth for r in range(len(countAll))],
-            [str(x) for x in range(1, 25)],
-        )
+        ax.set_xlabel("Time(Hours of day)", fontweight="bold")
+        ax.set_xticks([r + barWidth for r in range(len(countAll))])
+        ax.set_xticklabels([str(x) for x in range(1, 25)])
 
-        plt.legend()
-        plt.show()
+        return ax
 
     def GetTopClients(self):
         logger.info("Calculating Top Clients")
@@ -160,7 +156,7 @@ class Helpers:
 
         return data
 
-    def PeakHourForEachWebsites(self):
+    def PeakHourForEachWebsites(self, ax):
         logger.info("Calculating Peak time for each Domain")
 
         Websites = self.df["Domain_Name"]
@@ -193,13 +189,13 @@ class Helpers:
                 TopTwenty[i] = MostActiveHour[i]
                 Count += 1
 
-        plt.bar(TopTwenty.keys(), TopTwenty.values())
-        plt.title("Peak Hours For Top 20 Visited websites : ")
-        plt.xlabel("Domain_Name")
-        plt.ylabel("Peak_Hour")
-        plt.xticks(rotation=90)
-        plt.subplots_adjust(bottom=0.3)
-        plt.show()
+        ax.bar(TopTwenty.keys(), TopTwenty.values())
+        ax.title("Peak Hours For Top 20 Visited websites : ")
+        ax.set_xlabel("Domain_Name")
+        ax.set_ylabel("Peak_Hour")
+        ax.set_xticks(rotation=90, minor=True)
+        ax.subplots_adjust(bottom=0.3)
+        ax.show()
 
         return MostActiveHour
 
