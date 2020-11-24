@@ -2,15 +2,21 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from datetime import datetime
-from helpers import helpers
+from helpers import Helpers
+import logging
 
-Helpers = helpers()
+helpers = Helpers()
+logging.basicConfig()
+logger = logging.getLogger("MainWindow")
+logger.setLevel(logging.DEBUG)
+
 
 class MainWindow(QMainWindow):
+
     # Initializes Window Geometry and Important Variables
-    def __init__(self, parent=None, verbose=True):
-        self.verbose = verbose
-        self.PrintLog("Initializing Window")
+    def __init__(self, parent=None):
+        logger.info("Application Started")
+        logger.debug("Initilizing Instance of MainWindow")
 
         super(QMainWindow, self).__init__(parent)
         self.setWindowTitle("Proxy Log Analyser")
@@ -22,10 +28,12 @@ class MainWindow(QMainWindow):
             self.styleSheet = qss.read()
         self.setStyleSheet(self.styleSheet)
 
-        self.setupUi()
+        self.SetupUi()
 
-    def setupUi(self):
-        self.PrintLog("Setting-Up User Interface")
+        logger.info("Initialization Complete")
+
+    def SetupUi(self):
+        logger.info("Setting-Up User Interface")
 
         self.centralWidget = QWidget(self)
         self.setCentralWidget(self.centralWidget)
@@ -42,16 +50,16 @@ class MainWindow(QMainWindow):
 
         # Extra Feature Buttons
         self.plotTimeVsWebCountButton = QPushButton("Show &Time vs Number of Websites")
-        self.plotTimeVsWebCountButton.clicked.connect(lambda : Helpers.PlotAcceptedDeniedCount())
+        self.plotTimeVsWebCountButton.clicked.connect(
+            lambda: helpers.PlotAcceptedDeniedCount()
+        )
 
         self.plotWebsiteFrequencyButton = QPushButton("Frequency of Different Websites")
-        self.plotWebsiteFrequencyButton.clicked.connect(
-            lambda: Helpers.CountWebsite()
-        )
+        self.plotWebsiteFrequencyButton.clicked.connect(lambda: helpers.CountWebsite())
 
         self.button3 = QPushButton("Top 10 Clients")
         self.button3.clicked.connect(
-            lambda: self.DisplayDict(Helpers.GetTopTenClients(), "Top 10 Clients")
+            lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
         )
         self.button4 = QPushButton("Button4")
         self.button5 = QPushButton("Button5")
@@ -75,32 +83,37 @@ class MainWindow(QMainWindow):
         self.centralLayout.addWidget(self.fileStatusLabel)
         self.centralLayout.addLayout(self.featureButtonsLayout)
 
+        logger.debug("UI-Setup complete!!")
+
     # Choose File to perform Operations on
     def FilePicker(self):
+        logger.info("Opening File Picker")
+
         oldFilePath = self.filePath
         self.filePath = QFileDialog.getOpenFileName(self, "Open log File")
 
         # Reverts Changes if No file is Selected or Operation is Cancelled
         if self.filePath[0] == "":
+            logger.debug("No file path provided")
             self.filePath = oldFilePath
             return
 
         fileDate = datetime.strptime(self.filePath[0].split("-")[-1], "%Y%m%d")
 
+        logger.debug("Setting log Status to Loading")
         self.fileStatusLabel.setText(
             "Status: Loading Log of " + fileDate.strftime("%m/%d/%Y")
         )
 
-        self.PrintLog("Loading File")
-        Helpers.ReadLog(filepath=self.filePath[0])
-        self.PrintLog("File Loaded")
+        helpers.ReadLog(filepath=self.filePath[0])
 
         self.fileStatusLabel.setText(
             "Status: Log of " + fileDate.strftime("%d %b %Y") + " Loaded Successfully"
         )
 
+    def DisplayDict(self, data, title="DLG"):
+        logger.info("Displaying Result")
 
-    def DisplayDict(self, data, title = "DLG"):
         dlg = QDialog(self)
         dlg.setWindowTitle(title)
 
@@ -119,7 +132,3 @@ class MainWindow(QMainWindow):
 
         if dlg.exec_():
             pass
-
-    def PrintLog(self, entry):
-        if self.verbose == True:
-            print("[LOG] " + entry)
