@@ -141,7 +141,6 @@ class Helpers:
         plt.legend()
         plt.show()
 
-
     def GetTopClients(self):
         logger.info("Calculating Top Clients")
 
@@ -204,26 +203,31 @@ class Helpers:
         #     time2 = "25/12/20 12:12:12"
         #     dd/mm/yy hh:mm:ss
 
-        start = datetime. strptime(time1, '%d/%m/%y %H:%M:%S')
-        end = datetime. strptime(time2, '%d/%m/%y %H:%M:%S')
-        tmp = self.df.loc[(self.df["Timestamp"]<=end) & (self.df["Timestamp"]>=start)]
-#       alternate(slower) implementation  
-#         times = self.df["Timestamp"].values
-#         names = self.df["Domain_Name"].values
-#         d=set()
-#       for i in range(len(times)):
-#             hr = datetime.fromtimestamp(times[i])
-#             if(i==0 or i==len(times)-1):
-#                 print(hr)
-#             if hr<=end and hr>=start :
-#                 d.add(names[i])
-#         print(tmp.tail())
-        denied_requests = len(tmp.loc[tmp["Log_Tag"]=="TCP_DENIED"])
+        start = datetime.strptime(time1, "%d/%m/%y %H:%M:%S")
+        end = datetime.strptime(time2, "%d/%m/%y %H:%M:%S")
+        tmp = self.df.loc[
+            (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start)
+        ]
+        #       alternate(slower) implementation
+        #         times = self.df["Timestamp"].values
+        #         names = self.df["Domain_Name"].values
+        #         d=set()
+        #       for i in range(len(times)):
+        #             hr = datetime.fromtimestamp(times[i])
+        #             if(i==0 or i==len(times)-1):
+        #                 print(hr)
+        #             if hr<=end and hr>=start :
+        #                 d.add(names[i])
+        #         print(tmp.tail())
+        denied_requests = len(tmp.loc[tmp["Log_Tag"] == "TCP_DENIED"])
         different_clients = len(tmp.drop_duplicates(subset=["Client"]))
         different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
         mylist = [denied_requests, different_clients, different_websites]
         mylist = dask.compute(*mylist)
-        print("between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s" %(time1,time2, mylist[1], mylist[2], mylist[0]) )
+        print(
+            "between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s"
+            % (time1, time2, mylist[1], mylist[2], mylist[0])
+        )
         #       alternate(slower) implementation
         #         d=set()
         #       for i in range(len(times)):

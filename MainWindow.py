@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
         logger.info("Application Started")
         logger.debug("Initilizing Instance of MainWindow")
 
-        super(QMainWindow, self).__init__(parent)
+        super(MainWindow, self).__init__(parent)
         self.setWindowTitle("Proxy Log Analyser")
         self.resize(600, 225)
 
