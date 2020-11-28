@@ -50,9 +50,14 @@ class MainWindow(QMainWindow):
 
         # Selected File Display
         self.fileStatusLabel = QLabel(self, text="Status: No log selected")
+        
+        # Creating table to display Number of requests for top users
+        self.topClientsTable = QTableWidget()
+        self.topClientsTable.setRowCount(50)
+        self.topClientsTable.setColumnCount(2)
+        self.topClientsTable.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.topClientsTable.setHidden(True)
 
-        self.dlgText = QTextEdit(self.centralWidget)
-        # self.dlgText.setHidden(True)
 
         # Creating canvas for displaying plots on main window
         self.plotWidget = QWidget(self.centralWidget)
@@ -79,8 +84,8 @@ class MainWindow(QMainWindow):
             lambda: self.PlotOnCanvas(helpers.CountWebsite)
         )
 
-        self.button3 = QPushButton("Top 10 Clients")
-        self.button3.clicked.connect(
+        self.topClientsButton = QPushButton("Top 10 Clients")
+        self.topClientsButton.clicked.connect(
             lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
         )
         self.button4 = QPushButton("Button4")
@@ -93,7 +98,7 @@ class MainWindow(QMainWindow):
         self.featureButtonsLayout = QGridLayout()
         self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.plotWebsiteFrequencyButton, 0, 1, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button3, 1, 0, 1, 1)
+        self.featureButtonsLayout.addWidget(self.topClientsButton, 1, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button4, 1, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button5, 2, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button6, 2, 1, 1, 1)
@@ -103,7 +108,7 @@ class MainWindow(QMainWindow):
         # Main Vertical Layout
         self.centralLayout.addWidget(self.filePickerButton)
         self.centralLayout.addWidget(self.fileStatusLabel)
-        self.centralLayout.addWidget(self.dlgText)
+        self.centralLayout.addWidget(self.topClientsTable)
         self.centralLayout.addWidget(self.plotWidget)
         self.centralLayout.addLayout(self.featureButtonsLayout)
 
@@ -139,18 +144,17 @@ class MainWindow(QMainWindow):
         self.figWidget.draw()
 
         logger.debug("Displaying Plot")
-        self.dlgText.setHidden(True)
+        self.topClientsTable.setHidden(True)
         self.plotWidget.setHidden(False)
 
     def DisplayDict(self, data, title="DLG"):
-        logger.info("Parsing Recieved Data")
-        displayText = ""
-
+        i = 0
+        self.topClientsTable.setHorizontalHeaderLabels(["Clients","Number of Requests"])
         for key, val in data.items():
-            displayText += key + ": " + str(val) + "\n"
+            self.topClientsTable.setItem(i,0, QTableWidgetItem(key))
+            self.topClientsTable.setItem(i,1, QTableWidgetItem(str(val)))
+            i+=1
+        self.topClientsTable.setHidden(False)
+        
+            
 
-        self.dlgText.setReadOnly(True)
-        self.dlgText.setText(displayText)
-
-        self.plotWidget.setHidden(True)
-        self.dlgText.setHidden(False)

@@ -150,7 +150,7 @@ class Helpers:
         clientsRequestCounts = self.df["Client"].value_counts()
 
         topClients = clientsRequestCounts.nlargest(50).compute()
-        data = {"Clients": "Number of Requests"}
+        data = {}
         for client, hits in topClients.items():
             data[client] = hits
 
