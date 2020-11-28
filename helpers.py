@@ -110,14 +110,14 @@ class Helpers:
 
         time = self.df["Timestamp"]
         logTag = self.df["Log_Tag"]
-
+        allSeries = self.df["Timestamp"].dt.hour.value_counts().compute()
+        deniedSeries = self.df[self.df["Log_Tag"]=="TCP_DENIED"]["Timestamp"].dt.hour.value_counts().compute()
         logger.debug("Counting Hourly Denied Requests ")
-        for i, z in zip(time, logTag):
-            hr = i.hour
-            if z == "TCP_DENIED":
-                countDenied[hr] += 1
-
-            countAll[hr] += 1
+        for i in range(24):
+            try:countDenied[i] = deniedSeries[i+1]
+            except:continue
+            try:countAll[i] = allSeries[i+1]
+            except:continue
 
         barWidth = 0.25
 
