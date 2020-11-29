@@ -28,7 +28,9 @@ class inputdialogdemo(QDialog):
         StartTimeLabel = QLabel("Start time: ")
         EndTimeLabel = QLabel("End time: ")
         self.start_time = QLineEdit(self)
+        self.start_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
         self.end_time = QLineEdit(self)
+        self.end_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
         self.button =  QPushButton("submit")
     
         
