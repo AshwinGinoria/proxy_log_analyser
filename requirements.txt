@@ -2,3 +2,7 @@ PyQT5
 collections
 numpy
 matplotlib
+sklearn
+joblib
+dask
+logging

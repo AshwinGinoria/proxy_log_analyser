@@ -141,3 +141,6 @@ new.py
 test.py
 test.ipynb
 test.txt
+
+# Model
+model.pkl

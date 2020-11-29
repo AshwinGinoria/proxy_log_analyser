@@ -1,12 +1,12 @@
-import pandas as pd
-import numpy as np
-import dask.dataframe as dd
-from collections import Counter
-import matplotlib.pyplot as plt
-from datetime import datetime
 import logging
-import dask
+from datetime import datetime
 
+import dask
+import dask.dataframe as dd
+import joblib
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 
 logging.basicConfig()
 logger = logging.getLogger("Helpers")
@@ -66,27 +66,54 @@ class Helpers:
 
         # Dropping Useless Data to reduce RAM usage
         logger.debug("Dropping Useless Columns")
-        df = df.drop([cols[3], cols[7], cols[8]], axis=1)
 
+        # Converting TimeStamp datatype
         df["Timestamp"] = dd.to_datetime(df["Timestamp"], unit="s")
 
-        # Dropping un-important websites
-        logger.debug("Filtering out un-important Domains")
-        domainsToDrop = [
-            "gateway.iitmandi.ac.in",
-            "ak.staticimgfarm.com",
-            "login.live.com",
-        ]
-        for domain in domainsToDrop:
+        domainsToDrop = {
+            "gateway.iitmandi.ac.in": "IIT Mandi Login Portal",
+            "ak.staticimgfarm.com": "Free Anti-Malware by Chrome",
+            "login.live.com": "Microsoft Login",
+            "ctldl.windowsupdate.com": "Windows Update",
+            "www.msftconnecttest.com": "Microsoft Connection Test",
+            "ssw.live.com": "Windows Sneaking data from Us (Windows just can't stop talking to Microsoft)",
+            "splunkci.gingersoftware.com": "Language Checking sofware",
+            "in.archive.ubuntu.com": "ubuntu connecting behind peoples back",
+        }
+
+        # Storing Information about filtered Contents
+        rv = {
+            "labels": [
+                "Filtered Domains",
+                "Number of Hits",
+                "Percentage Hits",
+                "Description",
+            ],
+            "values": [],
+        }
+        self.totalHits = len(df)
+        self.domainCounts = df.Domain_Name.value_counts().compute()
+
+        for domain in domainsToDrop.keys():
+            # Skip step if domain not present
+            if domain not in self.domainCounts.keys():
+                continue
+
+            count = self.domainCounts[domain]
+            rv["values"].append(
+                [domain, count, count * 1.0 / self.totalHits, domainsToDrop[domain]]
+            )
             df = df[df["Domain_Name"] != domain]
 
-        logger.info("Data Read Successfully")
         self.df = df
+
+        logger.info("Data Read Successfully")
+        return rv
 
     def CountWebsite(self, ax):
         logger.info("Counting Most Visited Domains")
 
-        columnList = self.df["Domain_Name"].value_counts().compute()
+        columnList = self.domainCounts
 
         elementList = columnList.nlargest(n=20)
         mostVisited = columnList.max()
@@ -247,3 +274,39 @@ class Helpers:
         d["values"].append(["different websites",mylist[2]])
         d["values"].append(["number of denied requests",mylist[0]])
         return d
+
+    def GetURICategories(self):
+        logger.info("Categorizing Domains")
+        urlCounts = self.df.URI.value_counts().compute()
+
+        logger.debug("Loading Model")
+        model = joblib.load("model.pkl")
+
+        logger.debug("Predicting Categories")
+        pred = model.predict(urlCounts.keys())
+
+        categories = np.unique(pred)
+
+        logger.debug("Counting Domains")
+        rv = {
+            "labels": [
+                "Category",
+                "Number of Unique Hits",
+                "Total Number of Hits",
+                "Percentage Hits",
+            ],
+            "values": [],
+        }
+        for category in categories:
+            indices = np.where(pred == category)[0]
+            rv["values"].append(
+                [
+                    category,
+                    len(indices),
+                    np.sum(urlCounts[indices]),
+                    np.sum(urlCounts[indices]) / self.totalHits,
+                ]
+            )
+
+        logger.info("Categorization Complete")
+        return rv
