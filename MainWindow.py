@@ -85,7 +85,7 @@ class MainWindow(QMainWindow):
         )
 
         self.button4 = QPushButton("Analysis for given period")
-        self.button4.clicked.connect(self.on_button4_clicked)
+        self.button4.clicked.connect(lambda: inputdialogdemo(self).exec_())
 
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
@@ -111,10 +111,6 @@ class MainWindow(QMainWindow):
         self.centralLayout.addLayout(self.featureButtonsLayout)
 
         logger.debug("UI-Setup complete!!")
-
-    def on_button4_clicked(self):
-        self.dialog = inputdialogdemo(self)
-        self.dialog.exec_()
 
     # Choose File to perform Operations on
     def FilePicker(self):
@@ -171,7 +167,7 @@ class MainWindow(QMainWindow):
         self.plotWidget.setHidden(True)
 
 class inputdialogdemo(QDialog):
-    def __init__(self, parent=MainWindow):
+    def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
         self.styleSheet = ""
