@@ -171,7 +171,7 @@ class Helpers:
         for i, j in zip(Websites, times):
             temp = j.hour
             WebsitesList[i][temp] += 1
-            if MostActiveHour[i][1]>WebsitesList[i][temp]:
+            if MostActiveHour[i][1]<WebsitesList[i][temp]:
                 MostActiveHour[i] = [temp,WebsitesList[i][temp]]
 
         
