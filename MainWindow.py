@@ -84,8 +84,8 @@ class MainWindow(QMainWindow):
             lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
         )
 
-        self.button4 = QPushButton("Analysis for given period")
-        self.button4.clicked.connect(lambda: inputdialogdemo(self).exec_())
+        self.timeIntervalDataButton = QPushButton("Analysis for given Time interval")
+        self.timeIntervalDataButton.clicked.connect(lambda: timeIntervalDlg(self).exec_())
 
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow):
         self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.plotWebsiteFrequencyButton, 0, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.topClientsButton, 1, 0, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button4, 1, 1, 1, 1)
+        self.featureButtonsLayout.addWidget(self.timeIntervalDataButton, 1, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button5, 2, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button6, 2, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button7, 3, 0, 1, 1)
@@ -166,7 +166,7 @@ class MainWindow(QMainWindow):
         self.displayTable.setHidden(False)
         self.plotWidget.setHidden(True)
 
-class inputdialogdemo(QDialog):
+class timeIntervalDlg(QDialog):
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
@@ -184,7 +184,7 @@ class inputdialogdemo(QDialog):
         self.end_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
         self.button = QPushButton("Submit")
 
-        self.button.clicked.connect(lambda : self.onClick())
+        self.button.clicked.connect(self.onClick)
         
         self.layout.addWidget(StartTimeLabel)
         self.layout.addWidget(self.start_time)
