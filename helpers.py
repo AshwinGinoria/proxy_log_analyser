@@ -112,13 +112,21 @@ class Helpers:
         time = self.df["Timestamp"]
         logTag = self.df["Log_Tag"]
         allSeries = self.df["Timestamp"].dt.hour.value_counts().compute()
-        deniedSeries = self.df[self.df["Log_Tag"]=="TCP_DENIED"]["Timestamp"].dt.hour.value_counts().compute()
+        deniedSeries = (
+            self.df[self.df["Log_Tag"] == "TCP_DENIED"]["Timestamp"]
+            .dt.hour.value_counts()
+            .compute()
+        )
         logger.debug("Counting Hourly Denied Requests ")
         for i in range(24):
-            try:countDenied[i] = deniedSeries[i+1]
-            except:continue
-            try:countAll[i] = allSeries[i+1]
-            except:continue
+            try:
+                countDenied[i] = deniedSeries[i + 1]
+            except:
+                continue
+            try:
+                countAll[i] = allSeries[i + 1]
+            except:
+                continue
 
         barWidth = 0.25
 
@@ -151,9 +159,9 @@ class Helpers:
         clientsRequestCounts = self.df["Client"].value_counts()
 
         topClients = clientsRequestCounts.nlargest(50).compute()
-        data = {}
+        data = {"labels": ["Client IP", "Number of Hits"], "values": []}
         for client, hits in topClients.items():
-            data[client] = hits
+            data["values"].append([client, hits])
 
         return data
 
@@ -164,42 +172,39 @@ class Helpers:
         times = self.df["Timestamp"]
         WebsitesList = {}
         MostActiveHour = {}
-        
+
         for i in Websites:
             WebsitesList[i] = [0] * 24
-            MostActiveHour[i] = [0,0]
+            MostActiveHour[i] = [0, 0]
 
         for i, j in zip(Websites, times):
             temp = j.hour
             WebsitesList[i][temp] += 1
-            if MostActiveHour[i][1]<WebsitesList[i][temp]:
-                MostActiveHour[i] = [temp,WebsitesList[i][temp]]
+            if MostActiveHour[i][1] < WebsitesList[i][temp]:
+                MostActiveHour[i] = [temp, WebsitesList[i][temp]]
 
-        
-
-
-        #Hours = []
-        #for i in WebsitesList:
+        # Hours = []
+        # for i in WebsitesList:
         #    Hours.append(sum(WebsitesList[i]))
 
-        #Hours.sort(reverse=True)
-        #Hours = Hours[:20]
+        # Hours.sort(reverse=True)
+        # Hours = Hours[:20]
 
-        #TopTwenty = {}
+        # TopTwenty = {}
 
-        #Count = 0
-        #for i in WebsitesList:
+        # Count = 0
+        # for i in WebsitesList:
         #    if sum(WebsitesList[i]) in Hours and Count < 20:
         #        TopTwenty[i] = MostActiveHour[i]
         #        Count += 1
-                #plt.plot([x for x in range(0,24)],WebsitesList[i],label = i)
-        #plt.bar(TopTwenty.keys(),TopTwenty.values())
-        #plt.title("Peak Hours For Top 20 Visited websites : ")
-        #plt.xlabel("Domain_Name")
-        #plt.ylabel("Hour")
-        #plt.xticks(rotation=90)
-        #plt.subplots_adjust(bottom=0.3)
-        #plt.show()
+        # plt.plot([x for x in range(0,24)],WebsitesList[i],label = i)
+        # plt.bar(TopTwenty.keys(),TopTwenty.values())
+        # plt.title("Peak Hours For Top 20 Visited websites : ")
+        # plt.xlabel("Domain_Name")
+        # plt.ylabel("Hour")
+        # plt.xticks(rotation=90)
+        # plt.subplots_adjust(bottom=0.3)
+        # plt.show()
 
         return MostActiveHour
 
@@ -235,10 +240,10 @@ class Helpers:
             "between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s"
             % (time1, time2, mylist[1], mylist[2], mylist[0])
         )
-        d={}
+        d = {}
         d["start time"] = time1
         d["end time"] = time2
-        d["different clients"] = mylist[1] 
+        d["different clients"] = mylist[1]
         d["different websites"] = mylist[2]
         d["number of denied requests"] = mylist[0]
         return d

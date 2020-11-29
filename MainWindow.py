@@ -13,10 +13,11 @@ logging.basicConfig()
 logger = logging.getLogger("MainWindow")
 logger.setLevel(logging.DEBUG)
 
+
 class inputdialogdemo(QDialog):
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         super(inputdialogdemo, self).__init__(parent)
-		
+
         self.layout = QFormLayout(self)
         self.resize(600, 900)
         self.DifferentWebsites = QTableWidget()
@@ -31,29 +32,32 @@ class inputdialogdemo(QDialog):
         self.start_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
         self.end_time = QLineEdit(self)
         self.end_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
-        self.button =  QPushButton("submit")
-    
-        
+        self.button = QPushButton("submit")
+
         self.button.clicked.connect(
-            lambda: self.DisplayDict(helpers.GetNumberOfUniqueWebsites(self.start_time.text(), self.end_time.text()))
+            lambda: self.DisplayDict(
+                helpers.GetNumberOfUniqueWebsites(
+                    self.start_time.text(), self.end_time.text()
+                )
+            )
         )
-        
+
         self.layout.addWidget(StartTimeLabel)
         self.layout.addWidget(self.start_time)
         self.layout.addWidget(EndTimeLabel)
         self.layout.addWidget(self.end_time)
         self.layout.addWidget(self.button)
         self.layout.addWidget(self.DifferentWebsites)
-        
 
     def DisplayDict(self, data, title="DLG"):
         i = 0
-        self.DifferentWebsites.setHorizontalHeaderLabels(["Field","Value"])
+        self.DifferentWebsites.setHorizontalHeaderLabels(["Field", "Value"])
         for key, val in data.items():
-            self.DifferentWebsites.setItem(i,0, QTableWidgetItem(key))
-            self.DifferentWebsites.setItem(i,1, QTableWidgetItem(str(val)))
-            i+=1
+            self.DifferentWebsites.setItem(i, 0, QTableWidgetItem(key))
+            self.DifferentWebsites.setItem(i, 1, QTableWidgetItem(str(val)))
+            i += 1
         self.DifferentWebsites.setHidden(False)
+
 
 class MainWindow(QMainWindow):
 
@@ -91,14 +95,10 @@ class MainWindow(QMainWindow):
 
         # Selected File Display
         self.fileStatusLabel = QLabel(self, text="Status: No log selected")
-        
-        # Creating table to display Number of requests for top users
-        self.topClientsTable = QTableWidget()
-        self.topClientsTable.setRowCount(50)
-        self.topClientsTable.setColumnCount(2)
-        self.topClientsTable.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.topClientsTable.setHidden(True)
 
+        # Creating table to display Number of requests for top users
+        self.displayTable = QTableWidget()
+        # self.displayTable.setHidden(True)
 
         # Creating canvas for displaying plots on main window
         self.plotWidget = QWidget(self.centralWidget)
@@ -129,11 +129,9 @@ class MainWindow(QMainWindow):
         self.topClientsButton.clicked.connect(
             lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
         )
-        
+
         self.button4 = QPushButton("Analysis for given period")
-        self.button4.clicked.connect(
-            self.on_button4_clicked
-        )
+        self.button4.clicked.connect(self.on_button4_clicked)
 
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
@@ -154,7 +152,7 @@ class MainWindow(QMainWindow):
         # Main Vertical Layout
         self.centralLayout.addWidget(self.filePickerButton)
         self.centralLayout.addWidget(self.fileStatusLabel)
-        self.centralLayout.addWidget(self.topClientsTable)
+        self.centralLayout.addWidget(self.displayTable)
         self.centralLayout.addWidget(self.plotWidget)
         self.centralLayout.addLayout(self.featureButtonsLayout)
 
@@ -163,7 +161,7 @@ class MainWindow(QMainWindow):
     def on_button4_clicked(self):
         self.dialog = inputdialogdemo(self)
         self.dialog.exec_()
-    
+
     # Choose File to perform Operations on
     def FilePicker(self):
         logger.info("Opening File Picker")
@@ -194,17 +192,26 @@ class MainWindow(QMainWindow):
         self.figWidget.draw()
 
         logger.debug("Displaying Plot")
-        self.topClientsTable.setHidden(True)
+        self.displayTable.setHidden(True)
         self.plotWidget.setHidden(False)
 
     def DisplayDict(self, data, title="DLG"):
-        i = 0
-        self.topClientsTable.setHorizontalHeaderLabels(["Clients","Number of Requests"])
-        for key, val in data.items():
-            self.topClientsTable.setItem(i,0, QTableWidgetItem(key))
-            self.topClientsTable.setItem(i,1, QTableWidgetItem(str(val)))
-            i+=1
-        self.topClientsTable.setHidden(False)
-        
-            
+        labels = data["labels"]
+        values = data["values"]
 
+        self.displayTable.setRowCount(len(values))
+        self.displayTable.setColumnCount(len(labels))
+        self.displayTable.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.displayTable.setHorizontalHeaderLabels(labels)
+        self.displayTable.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeToContents
+        )
+
+        i = 0
+        for val in values:
+            self.displayTable.setItem(i, 0, QTableWidgetItem(str(val[0])))
+            self.displayTable.setItem(i, 1, QTableWidgetItem(str(val[1])))
+            i += 1
+
+        self.displayTable.setHidden(False)
+        self.plotWidget.setHidden(True)
