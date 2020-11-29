@@ -162,40 +162,43 @@ class Helpers:
         Websites = self.df["Domain_Name"]
         times = self.df["Timestamp"]
         WebsitesList = {}
-
+        MostActiveHour = {}
+        
         for i in Websites:
             WebsitesList[i] = [0] * 24
+            MostActiveHour[i] = [0,0]
 
         for i, j in zip(Websites, times):
-            WebsitesList[i][j.hour] += 1
+            temp = j.hour
+            WebsitesList[i][temp] += 1
+            if MostActiveHour[i][1]>WebsitesList[i][temp]:
+                MostActiveHour[i] = [temp,WebsitesList[i][temp]]
 
-        MostActiveHour = {}
+        
 
-        for i in Websites:
-            MostActiveHour[i] = WebsitesList[i].index(max(WebsitesList[i]))
 
-        Hours = []
-        for i in WebsitesList:
-            Hours.append(sum(WebsitesList[i]))
+        #Hours = []
+        #for i in WebsitesList:
+        #    Hours.append(sum(WebsitesList[i]))
 
-        Hours.sort(reverse=True)
-        Hours = Hours[:20]
+        #Hours.sort(reverse=True)
+        #Hours = Hours[:20]
 
-        TopTwenty = {}
+        #TopTwenty = {}
 
-        Count = 0
-        for i in WebsitesList:
-            if sum(WebsitesList[i]) in Hours and Count < 20:
-                TopTwenty[i] = MostActiveHour[i]
-                Count += 1
-
-        ax.bar(TopTwenty.keys(), TopTwenty.values())
-        ax.title("Peak Hours For Top 20 Visited websites : ")
-        ax.set_xlabel("Domain_Name")
-        ax.set_ylabel("Peak_Hour")
-        ax.set_xticks(rotation=90, minor=True)
-        ax.subplots_adjust(bottom=0.3)
-        ax.show()
+        #Count = 0
+        #for i in WebsitesList:
+        #    if sum(WebsitesList[i]) in Hours and Count < 20:
+        #        TopTwenty[i] = MostActiveHour[i]
+        #        Count += 1
+                #plt.plot([x for x in range(0,24)],WebsitesList[i],label = i)
+        #plt.bar(TopTwenty.keys(),TopTwenty.values())
+        #plt.title("Peak Hours For Top 20 Visited websites : ")
+        #plt.xlabel("Domain_Name")
+        #plt.ylabel("Hour")
+        #plt.xticks(rotation=90)
+        #plt.subplots_adjust(bottom=0.3)
+        #plt.show()
 
         return MostActiveHour
 
