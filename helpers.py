@@ -5,6 +5,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from datetime import datetime
 import logging
+import dask
 
 
 logging.basicConfig()
@@ -202,20 +203,18 @@ class Helpers:
     def GetNumberOfUniqueWebsites(self, time1, time2):
         logger.info("Calculating Number of Unique Websites in the given time-frame.")
         #     sample formats
-        #     time1 = "24/12/20 12:33:22"
+        #     time1 = "24/12/12 12:33:22"
         #     time2 = "25/12/20 12:12:12"
         #     dd/mm/yy hh:mm:ss
 
         start = datetime.strptime(time1, "%d/%m/%y %H:%M:%S")
         end = datetime.strptime(time2, "%d/%m/%y %H:%M:%S")
-        times = self.df["Timestamp"].values
-        names = self.df["Domain_Name"].values
-
         tmp = self.df.loc[
-            (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start),
-            ["Domain_Name"],
+            (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start)
         ]
         #       alternate(slower) implementation
+        #         times = self.df["Timestamp"].values
+        #         names = self.df["Domain_Name"].values
         #         d=set()
         #       for i in range(len(times)):
         #             hr = datetime.fromtimestamp(times[i])
@@ -223,7 +222,20 @@ class Helpers:
         #                 print(hr)
         #             if hr<=end and hr>=start :
         #                 d.add(names[i])
+        #         print(tmp.tail())
+        denied_requests = len(tmp.loc[tmp["Log_Tag"] == "TCP_DENIED"])
+        different_clients = len(tmp.drop_duplicates(subset=["Client"]))
+        different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
+        mylist = [denied_requests, different_clients, different_websites]
+        mylist = dask.compute(*mylist)
         print(
-            "number of unique websites visited between %s and %s : %s"
-            % (time1, time2, len(tmp.drop_duplicates(subset=["Domain_Name"])))
+            "between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s"
+            % (time1, time2, mylist[1], mylist[2], mylist[0])
         )
+        d={}
+        d["start time"] = time1
+        d["end time"] = time2
+        d["different clients"] = mylist[1] 
+        d["different websites"] = mylist[2]
+        d["number of denied requests"] = mylist[0]
+        return d

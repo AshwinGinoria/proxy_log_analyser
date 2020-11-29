@@ -13,6 +13,45 @@ logging.basicConfig()
 logger = logging.getLogger("MainWindow")
 logger.setLevel(logging.DEBUG)
 
+class inputdialogdemo(QDialog):
+    def __init__(self, parent = None):
+        super(inputdialogdemo, self).__init__(parent)
+		
+        self.layout = QFormLayout(self)
+        self.resize(600, 900)
+        self.DifferentWebsites = QTableWidget()
+        self.DifferentWebsites.setRowCount(5)
+        self.DifferentWebsites.setColumnCount(2)
+        self.DifferentWebsites.setColumnWidth(0, 400)
+        self.DifferentWebsites.setEditTriggers(QTableWidget.NoEditTriggers)
+        self.DifferentWebsites.setHidden(False)
+        StartTimeLabel = QLabel("Start time: ")
+        EndTimeLabel = QLabel("End time: ")
+        self.start_time = QLineEdit(self)
+        self.end_time = QLineEdit(self)
+        self.button =  QPushButton("submit")
+    
+        
+        self.button.clicked.connect(
+            lambda: self.DisplayDict(helpers.GetNumberOfUniqueWebsites(self.start_time.text(), self.end_time.text()))
+        )
+        
+        self.layout.addWidget(StartTimeLabel)
+        self.layout.addWidget(self.start_time)
+        self.layout.addWidget(EndTimeLabel)
+        self.layout.addWidget(self.end_time)
+        self.layout.addWidget(self.button)
+        self.layout.addWidget(self.DifferentWebsites)
+        
+
+    def DisplayDict(self, data, title="DLG"):
+        i = 0
+        self.DifferentWebsites.setHorizontalHeaderLabels(["Field","Value"])
+        for key, val in data.items():
+            self.DifferentWebsites.setItem(i,0, QTableWidgetItem(key))
+            self.DifferentWebsites.setItem(i,1, QTableWidgetItem(str(val)))
+            i+=1
+        self.DifferentWebsites.setHidden(False)
 
 class MainWindow(QMainWindow):
 
@@ -88,7 +127,12 @@ class MainWindow(QMainWindow):
         self.topClientsButton.clicked.connect(
             lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
         )
-        self.button4 = QPushButton("Button4")
+        
+        self.button4 = QPushButton("Analysis for given period")
+        self.button4.clicked.connect(
+            self.on_button4_clicked
+        )
+
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
         self.button7 = QPushButton("Button7")
@@ -114,6 +158,10 @@ class MainWindow(QMainWindow):
 
         logger.debug("UI-Setup complete!!")
 
+    def on_button4_clicked(self):
+        self.dialog = inputdialogdemo(self)
+        self.dialog.exec_()
+    
     # Choose File to perform Operations on
     def FilePicker(self):
         logger.info("Opening File Picker")
