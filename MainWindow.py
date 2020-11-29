@@ -88,7 +88,11 @@ class MainWindow(QMainWindow):
         self.topClientsButton.clicked.connect(
             lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
         )
-        self.button4 = QPushButton("Button4")
+
+        self.httpButton = QPushButton("Plot HTTP Response Occurence")
+        self.httpButton.clicked.connect(
+            lambda: self.PlotOnCanvas(helpers.PlotHttpCode)
+        )
         self.button5 = QPushButton("Button5")
         self.button6 = QPushButton("Button6")
         self.button7 = QPushButton("Button7")
@@ -99,7 +103,7 @@ class MainWindow(QMainWindow):
         self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.plotWebsiteFrequencyButton, 0, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.topClientsButton, 1, 0, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button4, 1, 1, 1, 1)
+        self.featureButtonsLayout.addWidget(self.httpButton, 1, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button5, 2, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button6, 2, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button7, 3, 0, 1, 1)
