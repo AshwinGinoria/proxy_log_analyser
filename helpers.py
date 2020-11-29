@@ -5,6 +5,7 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from datetime import datetime
 import logging
+import dask
 
 
 logging.basicConfig()
@@ -127,13 +128,21 @@ class Helpers:
         time = self.df["Timestamp"]
         logTag = self.df["Log_Tag"]
         allSeries = self.df["Timestamp"].dt.hour.value_counts().compute()
-        deniedSeries = self.df[self.df["Log_Tag"]=="TCP_DENIED"]["Timestamp"].dt.hour.value_counts().compute()
+        deniedSeries = (
+            self.df[self.df["Log_Tag"] == "TCP_DENIED"]["Timestamp"]
+            .dt.hour.value_counts()
+            .compute()
+        )
         logger.debug("Counting Hourly Denied Requests ")
         for i in range(24):
-            try:countDenied[i] = deniedSeries[i+1]
-            except:continue
-            try:countAll[i] = allSeries[i+1]
-            except:continue
+            try:
+                countDenied[i] = deniedSeries[i + 1]
+            except:
+                continue
+            try:
+                countAll[i] = allSeries[i + 1]
+            except:
+                continue
 
         barWidth = 0.25
 
@@ -166,9 +175,9 @@ class Helpers:
         clientsRequestCounts = self.df["Client"].value_counts()
 
         topClients = clientsRequestCounts.nlargest(50).compute()
-        data = {}
+        data = {"labels": ["Client IP", "Number of Hits"], "values": []}
         for client, hits in topClients.items():
-            data[client] = hits
+            data["values"].append([client, hits])
 
         return data
 
@@ -178,60 +187,58 @@ class Helpers:
         Websites = self.df["Domain_Name"]
         times = self.df["Timestamp"]
         WebsitesList = {}
-
-        for i in Websites:
-            WebsitesList[i] = [0] * 24
-
-        for i, j in zip(Websites, times):
-            WebsitesList[i][j.hour] += 1
-
         MostActiveHour = {}
 
         for i in Websites:
-            MostActiveHour[i] = WebsitesList[i].index(max(WebsitesList[i]))
+            WebsitesList[i] = [0] * 24
+            MostActiveHour[i] = [0, 0]
 
-        Hours = []
-        for i in WebsitesList:
-            Hours.append(sum(WebsitesList[i]))
+        for i, j in zip(Websites, times):
+            temp = j.hour
+            WebsitesList[i][temp] += 1
+            if MostActiveHour[i][1] < WebsitesList[i][temp]:
+                MostActiveHour[i] = [temp, WebsitesList[i][temp]]
 
-        Hours.sort(reverse=True)
-        Hours = Hours[:20]
+        # Hours = []
+        # for i in WebsitesList:
+        #    Hours.append(sum(WebsitesList[i]))
 
-        TopTwenty = {}
+        # Hours.sort(reverse=True)
+        # Hours = Hours[:20]
 
-        Count = 0
-        for i in WebsitesList:
-            if sum(WebsitesList[i]) in Hours and Count < 20:
-                TopTwenty[i] = MostActiveHour[i]
-                Count += 1
+        # TopTwenty = {}
 
-        ax.bar(TopTwenty.keys(), TopTwenty.values())
-        ax.title("Peak Hours For Top 20 Visited websites : ")
-        ax.set_xlabel("Domain_Name")
-        ax.set_ylabel("Peak_Hour")
-        ax.set_xticks(rotation=90, minor=True)
-        ax.subplots_adjust(bottom=0.3)
-        ax.show()
+        # Count = 0
+        # for i in WebsitesList:
+        #    if sum(WebsitesList[i]) in Hours and Count < 20:
+        #        TopTwenty[i] = MostActiveHour[i]
+        #        Count += 1
+        # plt.plot([x for x in range(0,24)],WebsitesList[i],label = i)
+        # plt.bar(TopTwenty.keys(),TopTwenty.values())
+        # plt.title("Peak Hours For Top 20 Visited websites : ")
+        # plt.xlabel("Domain_Name")
+        # plt.ylabel("Hour")
+        # plt.xticks(rotation=90)
+        # plt.subplots_adjust(bottom=0.3)
+        # plt.show()
 
         return MostActiveHour
 
     def GetNumberOfUniqueWebsites(self, time1, time2):
         logger.info("Calculating Number of Unique Websites in the given time-frame.")
         #     sample formats
-        #     time1 = "24/12/20 12:33:22"
+        #     time1 = "24/12/12 12:33:22"
         #     time2 = "25/12/20 12:12:12"
         #     dd/mm/yy hh:mm:ss
 
         start = datetime.strptime(time1, "%d/%m/%y %H:%M:%S")
         end = datetime.strptime(time2, "%d/%m/%y %H:%M:%S")
-        times = self.df["Timestamp"].values
-        names = self.df["Domain_Name"].values
-
         tmp = self.df.loc[
-            (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start),
-            ["Domain_Name"],
+            (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start)
         ]
         #       alternate(slower) implementation
+        #         times = self.df["Timestamp"].values
+        #         names = self.df["Domain_Name"].values
         #         d=set()
         #       for i in range(len(times)):
         #             hr = datetime.fromtimestamp(times[i])
@@ -239,7 +246,20 @@ class Helpers:
         #                 print(hr)
         #             if hr<=end and hr>=start :
         #                 d.add(names[i])
+        #         print(tmp.tail())
+        denied_requests = len(tmp.loc[tmp["Log_Tag"] == "TCP_DENIED"])
+        different_clients = len(tmp.drop_duplicates(subset=["Client"]))
+        different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
+        mylist = [denied_requests, different_clients, different_websites]
+        mylist = dask.compute(*mylist)
         print(
-            "number of unique websites visited between %s and %s : %s"
-            % (time1, time2, len(tmp.drop_duplicates(subset=["Domain_Name"])))
+            "between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s"
+            % (time1, time2, mylist[1], mylist[2], mylist[0])
         )
+        d = {}
+        d["start time"] = time1
+        d["end time"] = time2
+        d["different clients"] = mylist[1]
+        d["different websites"] = mylist[2]
+        d["number of denied requests"] = mylist[0]
+        return d
