@@ -13,52 +13,6 @@ logging.basicConfig()
 logger = logging.getLogger("MainWindow")
 logger.setLevel(logging.DEBUG)
 
-
-class inputdialogdemo(QDialog):
-    def __init__(self, parent=None):
-        super(inputdialogdemo, self).__init__(parent)
-
-        self.layout = QFormLayout(self)
-        self.resize(600, 900)
-        self.DifferentWebsites = QTableWidget()
-        self.DifferentWebsites.setRowCount(5)
-        self.DifferentWebsites.setColumnCount(2)
-        self.DifferentWebsites.setColumnWidth(0, 400)
-        self.DifferentWebsites.setEditTriggers(QTableWidget.NoEditTriggers)
-        self.DifferentWebsites.setHidden(False)
-        StartTimeLabel = QLabel("Start time: ")
-        EndTimeLabel = QLabel("End time: ")
-        self.start_time = QLineEdit(self)
-        self.start_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
-        self.end_time = QLineEdit(self)
-        self.end_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
-        self.button = QPushButton("submit")
-
-        self.button.clicked.connect(
-            lambda: self.DisplayDict(
-                helpers.GetNumberOfUniqueWebsites(
-                    self.start_time.text(), self.end_time.text()
-                )
-            )
-        )
-
-        self.layout.addWidget(StartTimeLabel)
-        self.layout.addWidget(self.start_time)
-        self.layout.addWidget(EndTimeLabel)
-        self.layout.addWidget(self.end_time)
-        self.layout.addWidget(self.button)
-        self.layout.addWidget(self.DifferentWebsites)
-
-    def DisplayDict(self, data, title="DLG"):
-        i = 0
-        self.DifferentWebsites.setHorizontalHeaderLabels(["Field", "Value"])
-        for key, val in data.items():
-            self.DifferentWebsites.setItem(i, 0, QTableWidgetItem(key))
-            self.DifferentWebsites.setItem(i, 1, QTableWidgetItem(str(val)))
-            i += 1
-        self.DifferentWebsites.setHidden(False)
-
-
 class MainWindow(QMainWindow):
 
     # Initializes Window Geometry and Important Variables
@@ -215,3 +169,36 @@ class MainWindow(QMainWindow):
 
         self.displayTable.setHidden(False)
         self.plotWidget.setHidden(True)
+
+class inputdialogdemo(QDialog):
+    def __init__(self, parent=MainWindow):
+        super().__init__()
+        self.parent = parent
+        self.styleSheet = ""
+        with open("design.qss") as qss:
+            self.styleSheet = qss.read()
+        self.setStyleSheet(self.styleSheet)
+        self.layout = QFormLayout(self)
+        self.resize(300, 200)
+        StartTimeLabel = QLabel("Start time: ")
+        EndTimeLabel = QLabel("End time: ")
+        self.start_time = QLineEdit(self)
+        self.start_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
+        self.end_time = QLineEdit(self)
+        self.end_time.setPlaceholderText("Time format: dd/mm/yy hh:mm:ss")
+        self.button = QPushButton("Submit")
+
+        self.button.clicked.connect(lambda : self.onClick())
+        
+        self.layout.addWidget(StartTimeLabel)
+        self.layout.addWidget(self.start_time)
+        self.layout.addWidget(EndTimeLabel)
+        self.layout.addWidget(self.end_time)
+        self.layout.addWidget(self.button)
+    def onClick(self):
+        self.parent.DisplayDict(
+                helpers.GetNumberOfUniqueWebsites(
+                    self.start_time.text(), self.end_time.text()
+                )
+            )
+        self.close()

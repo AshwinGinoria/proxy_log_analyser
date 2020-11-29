@@ -236,14 +236,14 @@ class Helpers:
         different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
         mylist = [denied_requests, different_clients, different_websites]
         mylist = dask.compute(*mylist)
-        print(
-            "between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s"
-            % (time1, time2, mylist[1], mylist[2], mylist[0])
-        )
-        d = {}
-        d["start time"] = time1
-        d["end time"] = time2
-        d["different clients"] = mylist[1]
-        d["different websites"] = mylist[2]
-        d["number of denied requests"] = mylist[0]
+        # print(
+        #     "between %s and %s :\nnumber of different clients: %s , number of different websites: %s, number of denied requests: %s"
+        #     % (time1, time2, mylist[1], mylist[2], mylist[0])
+        # )
+        d = {"labels":["Label","Value"],"values":[]}
+        d["values"].append(["start time",time1])
+        d["values"].append(["end time",time2])
+        d["values"].append(["different clients",mylist[1]])
+        d["values"].append(["different websites",mylist[2]])
+        d["values"].append(["number of denied requests",mylist[0]])
         return d
