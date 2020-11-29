@@ -22,7 +22,7 @@ class MainWindow(QMainWindow):
         logger.info("Application Started")
         logger.debug("Initilizing Instance of MainWindow")
 
-        super(QMainWindow, self).__init__(parent)
+        super(MainWindow, self).__init__(parent)
         self.setWindowTitle("Proxy Log Analyser")
         self.resize(800, 700)
 
@@ -83,7 +83,7 @@ class MainWindow(QMainWindow):
 
         self.topClientsButton = QPushButton("Top 10 Clients")
         self.topClientsButton.clicked.connect(
-            lambda: self.DisplayDict(helpers.GetTopClients(), "Top 10 Clients")
+            lambda: self.DisplayDict(helpers.GetTopClients(), "Top Clients")
         )
 
         self.timeIntervalDataButton = QPushButton("Analysis for given Time interval")
