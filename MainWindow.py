@@ -133,7 +133,11 @@ class MainWindow(QMainWindow):
         self.button4 = QPushButton("Analysis for given period")
         self.button4.clicked.connect(self.on_button4_clicked)
 
-        self.button5 = QPushButton("Button5")
+        self.urlCategories = QPushButton("Get URL Categories")
+        self.urlCategories.clicked.connect(
+            lambda: self.DisplayDict(helpers.GetDomainCategories(), "Domain Categories")
+        )
+
         self.button6 = QPushButton("Button6")
         self.button7 = QPushButton("Button7")
         self.button8 = QPushButton("Button8")
@@ -144,7 +148,7 @@ class MainWindow(QMainWindow):
         self.featureButtonsLayout.addWidget(self.plotWebsiteFrequencyButton, 0, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.topClientsButton, 1, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button4, 1, 1, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button5, 2, 0, 1, 1)
+        self.featureButtonsLayout.addWidget(self.urlCategories, 2, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button6, 2, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button7, 3, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button8, 3, 1, 1, 1)
@@ -175,7 +179,7 @@ class MainWindow(QMainWindow):
             self.fileNames = oldFileNames
             return
 
-        helpers.ReadLog(listFiles=self.fileNames[0])
+        self.DisplayDict(helpers.ReadLog(listFiles=self.fileNames[0]))
 
         self.fileStatusLabel.setText(
             "Status: " + str(len(self.fileNames[0])) + " Loaded Successfully"
@@ -208,9 +212,11 @@ class MainWindow(QMainWindow):
         )
 
         i = 0
-        for val in values:
-            self.displayTable.setItem(i, 0, QTableWidgetItem(str(val[0])))
-            self.displayTable.setItem(i, 1, QTableWidgetItem(str(val[1])))
+        for row in values:
+            j = 0
+            for val in row:
+                self.displayTable.setItem(i, j, QTableWidgetItem(str(val)))
+                j += 1
             i += 1
 
         self.displayTable.setHidden(False)
