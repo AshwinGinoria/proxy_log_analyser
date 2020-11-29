@@ -272,7 +272,7 @@ class Helpers:
         d["number of denied requests"] = mylist[0]
         return d
 
-    def GetDomainCategories(self):
+    def GetURICategories(self):
         logger.info("Categorizing Domains")
         urlCounts = self.df.URI.value_counts().compute()
 

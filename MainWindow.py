@@ -135,7 +135,7 @@ class MainWindow(QMainWindow):
 
         self.urlCategories = QPushButton("Get URL Categories")
         self.urlCategories.clicked.connect(
-            lambda: self.DisplayDict(helpers.GetDomainCategories(), "Domain Categories")
+            lambda: self.DisplayDict(helpers.GetURICategories(), "URI Categories")
         )
 
         self.button6 = QPushButton("Button6")
