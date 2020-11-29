@@ -94,7 +94,11 @@ class MainWindow(QMainWindow):
             lambda: self.DisplayDict(helpers.GetURICategories(), "URI Categories")
         )
 
-        self.button6 = QPushButton("Button6")
+        self.httpButton = QPushButton("Plot HTTP Response Occurence")
+        self.httpButton.clicked.connect(
+            lambda: self.PlotOnCanvas(helpers.PlotHttpCode)
+        )
+
         self.button7 = QPushButton("Button7")
         self.button8 = QPushButton("Button8")
 
@@ -105,7 +109,7 @@ class MainWindow(QMainWindow):
         self.featureButtonsLayout.addWidget(self.topClientsButton, 1, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.timeIntervalDataButton, 1, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.urlCategories, 2, 0, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button6, 2, 1, 1, 1)
+        self.featureButtonsLayout.addWidget(self.httpButton, 2, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.button7, 3, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.button8, 3, 1, 1, 1)
 

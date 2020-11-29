@@ -130,6 +130,22 @@ class Helpers:
 
         return ax
 
+    def PlotHttpCode(self, ax):
+        logger.info("Plotting HTTP Status Code")
+
+        columnList = self.df["HTTP_Code"].value_counts().compute()
+
+        httpcode = [key for key, val in columnList.items()]
+        frequency = [val for key, val in columnList.items()]
+
+        ax.bar(httpcode, frequency)
+        ax.set_title("HTTP Response Occurence")
+        ax.set_xlabel("HTTP Code")
+        ax.set_ylabel("Frequency")
+        ax.tick_params(labelrotation=60)
+
+        return ax
+        
     def PlotAcceptedDeniedCount(self, ax):
 
         logger.info("Counting Total Requests")
