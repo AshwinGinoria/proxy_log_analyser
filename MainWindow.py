@@ -99,9 +99,6 @@ class MainWindow(QMainWindow):
             lambda: self.PlotOnCanvas(helpers.PlotHttpCode)
         )
 
-        self.button7 = QPushButton("Button7")
-        self.button8 = QPushButton("Button8")
-
         # Feature buttons arranged in a grid
         self.featureButtonsLayout = QGridLayout()
         self.featureButtonsLayout.addWidget(self.plotTimeVsWebCountButton, 0, 0, 1, 1)
@@ -110,8 +107,6 @@ class MainWindow(QMainWindow):
         self.featureButtonsLayout.addWidget(self.timeIntervalDataButton, 1, 1, 1, 1)
         self.featureButtonsLayout.addWidget(self.urlCategories, 2, 0, 1, 1)
         self.featureButtonsLayout.addWidget(self.httpButton, 2, 1, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button7, 3, 0, 1, 1)
-        self.featureButtonsLayout.addWidget(self.button8, 3, 1, 1, 1)
 
         # Main Vertical Layout
         self.centralLayout.addWidget(self.filePickerButton)
