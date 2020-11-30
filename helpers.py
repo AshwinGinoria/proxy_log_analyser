@@ -239,17 +239,7 @@ class Helpers:
         tmp = self.df.loc[
             (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start)
         ]
-        #       alternate(slower) implementation
-        #         times = self.df["Timestamp"].values
-        #         names = self.df["Domain_Name"].values
-        #         d=set()
-        #       for i in range(len(times)):
-        #             hr = datetime.fromtimestamp(times[i])
-        #             if(i==0 or i==len(times)-1):
-        #                 print(hr)
-        #             if hr<=end and hr>=start :
-        #                 d.add(names[i])
-        #         print(tmp.tail())
+
         denied_requests = len(tmp.loc[tmp["Log_Tag"] == "TCP_DENIED"])
         different_clients = len(tmp.drop_duplicates(subset=["Client"]))
         different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
