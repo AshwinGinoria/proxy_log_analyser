@@ -225,30 +225,6 @@ class Helpers:
             WebsitesList[i][temp] += 1
             if MostActiveHour[i][1] < WebsitesList[i][temp]:
                 MostActiveHour[i] = [temp, WebsitesList[i][temp]]
-
-        # Hours = []
-        # for i in WebsitesList:
-        #    Hours.append(sum(WebsitesList[i]))
-
-        # Hours.sort(reverse=True)
-        # Hours = Hours[:20]
-
-        # TopTwenty = {}
-
-        # Count = 0
-        # for i in WebsitesList:
-        #    if sum(WebsitesList[i]) in Hours and Count < 20:
-        #        TopTwenty[i] = MostActiveHour[i]
-        #        Count += 1
-        # plt.plot([x for x in range(0,24)],WebsitesList[i],label = i)
-        # plt.bar(TopTwenty.keys(),TopTwenty.values())
-        # plt.title("Peak Hours For Top 20 Visited websites : ")
-        # plt.xlabel("Domain_Name")
-        # plt.ylabel("Hour")
-        # plt.xticks(rotation=90)
-        # plt.subplots_adjust(bottom=0.3)
-        # plt.show()
-
         return MostActiveHour
 
     def GetNumberOfUniqueWebsites(self, time1, time2):
