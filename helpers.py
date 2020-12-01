@@ -103,6 +103,8 @@ class Helpers:
             rv["values"].append(
                 [domain, count, count * 1.0 / self.totalHits, domainsToDrop[domain]]
             )
+            self.totalHits -= self.domainCounts[domain]
+            self.domainCounts[domain] = 0
             df = df[df["Domain_Name"] != domain]
 
         self.df = df
@@ -225,6 +227,30 @@ class Helpers:
             WebsitesList[i][temp] += 1
             if MostActiveHour[i][1] < WebsitesList[i][temp]:
                 MostActiveHour[i] = [temp, WebsitesList[i][temp]]
+
+        # Hours = []
+        # for i in WebsitesList:
+        #    Hours.append(sum(WebsitesList[i]))
+
+        # Hours.sort(reverse=True)
+        # Hours = Hours[:20]
+
+        # TopTwenty = {}
+
+        # Count = 0
+        # for i in WebsitesList:
+        #    if sum(WebsitesList[i]) in Hours and Count < 20:
+        #        TopTwenty[i] = MostActiveHour[i]
+        #        Count += 1
+        # plt.plot([x for x in range(0,24)],WebsitesList[i],label = i)
+        # plt.bar(TopTwenty.keys(),TopTwenty.values())
+        # plt.title("Peak Hours For Top 20 Visited websites : ")
+        # plt.xlabel("Domain_Name")
+        # plt.ylabel("Hour")
+        # plt.xticks(rotation=90)
+        # plt.subplots_adjust(bottom=0.3)
+        # plt.show()
+
         return MostActiveHour
 
     def GetNumberOfUniqueWebsites(self, time1, time2):
@@ -239,7 +265,17 @@ class Helpers:
         tmp = self.df.loc[
             (self.df["Timestamp"] <= end) & (self.df["Timestamp"] >= start)
         ]
-
+        #       alternate(slower) implementation
+        #         times = self.df["Timestamp"].values
+        #         names = self.df["Domain_Name"].values
+        #         d=set()
+        #       for i in range(len(times)):
+        #             hr = datetime.fromtimestamp(times[i])
+        #             if(i==0 or i==len(times)-1):
+        #                 print(hr)
+        #             if hr<=end and hr>=start :
+        #                 d.add(names[i])
+        #         print(tmp.tail())
         denied_requests = len(tmp.loc[tmp["Log_Tag"] == "TCP_DENIED"])
         different_clients = len(tmp.drop_duplicates(subset=["Client"]))
         different_websites = len(tmp.drop_duplicates(subset=["Domain_Name"]))
